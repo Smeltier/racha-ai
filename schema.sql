@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS group_members (
     role ENUM('admin', 'member') NOT NULL DEFAULT 'member',
 
     PRIMARY KEY (user_id, group_id),
-    CONSTRAINT fk_group_members_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_group_members_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id)
+    CONSTRAINT fk_group_members_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_group_members_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS categories (
     name VARCHAR(50) NOT NULL,
     color VARCHAR(6) NOT NULL,
 
-    CONSTRAINT fk_categories_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id)
+    CONSTRAINT fk_categories_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id) ON DELETE CASCADE,
     CONSTRAINT uq_categories_group_id_name UNIQUE (group_id, name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -43,9 +43,11 @@ CREATE TABLE IF NOT EXISTS expenses (
     due_date DATE NOT NULL,
     paid_at DATE NULL,
 
-    CONSTRAINT fk_expenses_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id),
-    CONSTRAINT fk_expenses_category_id FOREIGN KEY (category_id) REFERENCES categories (id),
-    CONSTRAINT fk_expenses_payer_id FOREIGN KEY (payer_id) REFERENCES users (id)
+    CONSTRAINT fk_expenses_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id) ON DELETE RESTRICT,
+    CONSTRAINT fk_expenses_category_id FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE SET NULL,
+    CONSTRAINT fk_expenses_payer_id FOREIGN KEY (payer_id) REFERENCES users (id) ON DELETE RESTRICT,
+    CONSTRAINT chk_expenses_amount_cents CHECK (amount_cents > 0),
+    CONSTRAINT chk_expenses_due_date CHECK (due_date >= performed_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS invites (
@@ -55,8 +57,8 @@ CREATE TABLE IF NOT EXISTS invites (
     status ENUM('pending', 'accepted', 'declined', 'expired') NOT NULL DEFAULT 'pending',
     expires_at DATETIME NOT NULL,
 
-    CONSTRAINT fk_invites_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id),
-    CONSTRAINT fk_invites_invited_user_id FOREIGN KEY (invited_user_id) REFERENCES users (id)
+    CONSTRAINT fk_invites_group_id FOREIGN KEY (group_id) REFERENCES user_groups (id) ON DELETE CASCADE,
+    CONSTRAINT fk_invites_invited_user_id FOREIGN KEY (invited_user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS expense_splits (
@@ -65,7 +67,7 @@ CREATE TABLE IF NOT EXISTS expense_splits (
     amount_owed_cents BIGINT UNSIGNED NOT NULL,
 
     PRIMARY KEY (expense_id, user_id),
-    CONSTRAINT fk_expense_splits_expense_id FOREIGN KEY (expense_id) REFERENCES expenses (id),
-    CONSTRAINT fk_expense_splits_user_id FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT fk_expense_splits_expense_id FOREIGN KEY (expense_id) REFERENCES expenses (id) ON DELETE CASCADE,
+    CONSTRAINT fk_expense_splits_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
