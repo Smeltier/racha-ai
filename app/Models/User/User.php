@@ -2,9 +2,9 @@
 
 namespace App\Models\User;
 
-use InvalidArgumentException;
 use LogicException;
 use DateTimeImmutable;
+use App\Exceptions\ValidationException;
 
 final class User
 {
@@ -26,7 +26,7 @@ final class User
     public static function register(string $name, string $email, string $plainPassword): self
     {
         if (mb_strlen($plainPassword) < 8) {
-            throw new InvalidArgumentException('Password must have at least 8 characters');
+            throw new ValidationException('Password must have at least 8 characters');
         }
 
         return new self(null, $name, Email::from($email), password_hash($plainPassword, PASSWORD_ARGON2ID));
@@ -118,7 +118,7 @@ final class User
         $name = trim($name);
 
         if ($name === '' || mb_strlen($name) > 150) {
-            throw new InvalidArgumentException("Name must have between 1 and 150 characters");
+            throw new ValidationException("Name must have between 1 and 150 characters");
         }
 
         return $name;
