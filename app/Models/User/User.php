@@ -9,14 +9,14 @@ final class User
 {
     private ?int $id;
     private string $name;
-    private string $email;
+    private Email $email;
     private string $passwordHash;
 
-    private function __construct(?int $id, string $name, string $email, string $passwordHash)
+    private function __construct(?int $id, string $name, Email $email, string $passwordHash)
     {
         $this->id = $id;
         $this->changeName($name);
-        $this->changeEmail($email);
+        $this->email = $email;
         $this->passwordHash = $passwordHash;
     }
 
@@ -26,12 +26,12 @@ final class User
             throw new InvalidArgumentException('Password must have at least 8 characters');
         }
 
-        return new self(null, $name, $email, password_hash($plainPassword, PASSWORD_ARGON2ID));
+        return new self(null, $name, Email::from($email), password_hash($plainPassword, PASSWORD_ARGON2ID));
     }
 
     public static function reconstitute(int $id, string $name, string $email, string $passwordHash): self
     {
-        return new self($id, $name, $email, $passwordHash);
+        return new self($id, $name, Email::from($email), $passwordHash);
     }
 
     public function verifyPassword(string $plainPassword): bool
@@ -61,13 +61,7 @@ final class User
 
     public function changeEmail(string $email): void
     {
-        $email = strtolower(trim($email));
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 320) {
-            throw new InvalidArgumentException('Invalid email');
-        }
-
-        $this->email = $email;
+        $this->email = Email::from($email);
     }
 
     public function getId(): ?int
@@ -80,7 +74,7 @@ final class User
         return $this->name;
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
         return $this->email;
     }
