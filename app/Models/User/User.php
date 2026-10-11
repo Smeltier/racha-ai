@@ -17,7 +17,7 @@ final class User
     private function __construct(?int $id, string $name, Email $email, string $passwordHash, ?DateTimeImmutable $deletedAt = null)
     {
         $this->id = $id;
-        $this->changeName($name);
+        $this->name = self::normalizeName($name);
         $this->email = $email;
         $this->passwordHash = $passwordHash;
         $this->deletedAt = $deletedAt;
@@ -59,13 +59,7 @@ final class User
     {
         $this->assertNotDeleted();
 
-        $name = trim($name);
-
-        if ($name === '' || mb_strlen($name) > 150) {
-            throw new InvalidArgumentException('Name must have between 1 and 150 characters');
-        }
-
-        $this->name = $name;
+        $this->name = self::normalizeName($name);
     }
 
     public function changeEmail(string $email): void
@@ -75,11 +69,18 @@ final class User
         $this->email = Email::from($email);
     }
 
-    public function assertNotDeleted() : void
+    public function delete(DateTimeImmutable $now) : void
     {
-        if ($this->isDeleted()) {
-            throw new LogicException("User is deleted");
+        if ($this->id === null) {
+            throw new LogicException("User not persisted");
         }
+
+        $this->assertNotDeleted();
+
+        $this->name = 'Deleted user';
+        $this->email = Email::from("deleted_{$this->id}@invalid.example");
+        $this->passwordHash = '';
+        $this->deletedAt = $now;
     }
 
     public function isDeleted() : bool
@@ -110,5 +111,23 @@ final class User
     public function getDeletedAt() : ?DateTimeImmutable
     {
         return $this->deletedAt;
+    }
+
+    private static function normalizeName(string $name) : string
+    {
+        $name = trim($name);
+
+        if ($name === '' || mb_strlen($name) > 150) {
+            throw new InvalidArgumentException("Name must have between 1 and 150 characters");
+        }
+
+        return $name;
+    }
+
+    private function assertNotDeleted() : void
+    {
+        if ($this->isDeleted()) {
+            throw new LogicException("User is deleted");
+        }
     }
 }
