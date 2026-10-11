@@ -39,6 +39,10 @@ final class User
 
     public function verifyPassword(string $plainPassword): bool
     {
+        if ($this->isDeleted()) {
+            return false;
+        }
+
         return password_verify($plainPassword, $this->passwordHash);
     }
 
@@ -53,6 +57,8 @@ final class User
 
     public function changeName(string $name): void
     {
+        $this->assertNotDeleted();
+
         $name = trim($name);
 
         if ($name === '' || mb_strlen($name) > 150) {
@@ -64,7 +70,21 @@ final class User
 
     public function changeEmail(string $email): void
     {
+        $this->assertNotDeleted();
+
         $this->email = Email::from($email);
+    }
+
+    public function assertNotDeleted() : void
+    {
+        if ($this->isDeleted()) {
+            throw new LogicException("User is deleted");
+        }
+    }
+
+    public function isDeleted() : bool
+    {
+        return $this->deletedAt !== null;
     }
 
     public function getId(): ?int
@@ -85,5 +105,10 @@ final class User
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
+    }
+
+    public function getDeletedAt() : ?DateTimeImmutable
+    {
+        return $this->deletedAt;
     }
 }
