@@ -36,7 +36,7 @@ final class UserDAO
             ]);
         } catch (PDOException $e) {
             if (($e->errorInfo[1] ?? null) == 1062) {
-                throw new RuntimeException("Email already in use");
+                throw new RuntimeException("Email already in use", 0, $e);
             }
             throw $e;
         }
@@ -48,20 +48,33 @@ final class UserDAO
 
     public function update(User $user) : void
     {
-    }
+        if ($user->getId() === null) {
+            throw new LogicException("User not persisted");
+        }
 
-    public function delete(int $id) : void
-    {
         $stmt = $this->pdo->prepare(
-            "DELETE FROM users
+            "UPDATE users
+             SET name = :name,
+                 email = :email,
+                 password_hash = :password_hash,
+                 deleted_at = :deleted_at
              WHERE id = :id"
         );
-        $stmt->bindParam(':id', $id);
 
         try {
-            $stmt->execute();
+            $stmt->execute([
+                ':name' => $user->getName(),
+                ':email' => $user->getEmail()->getValue(),
+                ':password_hash' => $user->getPasswordHash(),
+                ':deleted_at' => $user->getDeletedAt()?->format('Y-m-d H:i:s'),
+                ':id' => $user->getId()
+            ]);
         } catch (PDOException $e) {
+            if (($e->errorInfo[1] ?? null) == 1062) {
+                throw new RuntimeException("Email already in use", 0, $e);
+            }
 
+            throw $e;
         }
     }
 
@@ -69,7 +82,7 @@ final class UserDAO
     {
         $stmt = $this->pdo->prepare(
             "SELECT id, name, email, password_hash
-             FROM users WHERE id = :id"
+             FROM users WHERE id = :id AND deleted_at IS NULL"
         );
         $stmt->bindParam(':id', $id);
 
@@ -85,7 +98,7 @@ final class UserDAO
 
         $stmt = $this->pdo->prepare(
             "SELECT id, name, email, password_hash
-             FROM users WHERE email = :email"
+             FROM users WHERE email = :email AND deleted_at IS NULL"
         );
         $stmt->bindParam(':email', $emailValue);
 
@@ -101,7 +114,7 @@ final class UserDAO
         $emailValue = $email->getValue();
 
         $stmt = $this->pdo->prepare(
-            "SELECT 1 FROM users WHERE email = :email LIMIT 1"
+            "SELECT 1 FROM users WHERE email = :email AND deleted_at IS NULL LIMIT 1"
         );
         $stmt->bindParam(':email', $emailValue);
 
@@ -116,7 +129,7 @@ final class UserDAO
             (int) $tuple['id'],
             $tuple['name'],
             $tuple['email'],
-            $tuple['password_hash']
+            $tuple['password_hash'],
         );
     }
 }
