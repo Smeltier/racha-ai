@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use InvalidArgumentException;
 use LogicException;
+use DateTimeImmutable;
 
 final class User
 {
@@ -11,13 +12,15 @@ final class User
     private string $name;
     private Email $email;
     private string $passwordHash;
+    private ?DateTimeImmutable $deletedAt;
 
-    private function __construct(?int $id, string $name, Email $email, string $passwordHash)
+    private function __construct(?int $id, string $name, Email $email, string $passwordHash, ?DateTimeImmutable $deletedAt = null)
     {
         $this->id = $id;
         $this->changeName($name);
         $this->email = $email;
         $this->passwordHash = $passwordHash;
+        $this->deletedAt = $deletedAt;
     }
 
     public static function register(string $name, string $email, string $plainPassword): self
@@ -29,9 +32,9 @@ final class User
         return new self(null, $name, Email::from($email), password_hash($plainPassword, PASSWORD_ARGON2ID));
     }
 
-    public static function reconstitute(int $id, string $name, string $email, string $passwordHash): self
+    public static function reconstitute(int $id, string $name, string $email, string $passwordHash, ?DateTimeImmutable $deletedAt = null): self
     {
-        return new self($id, $name, Email::from($email), $passwordHash);
+        return new self($id, $name, Email::from($email), $passwordHash, $deletedAt);
     }
 
     public function verifyPassword(string $plainPassword): bool
