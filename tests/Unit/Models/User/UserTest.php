@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Models\User;
 
-use App\Models\User\Email;
-use App\Models\User\User;
 use InvalidArgumentException;
 use LogicException;
+use DateTimeImmutable;
+use App\Models\User\User;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -105,7 +105,7 @@ final class UserTest extends TestCase
     {
         $hash = password_hash(self::VALID_PASSWORD, PASSWORD_ARGON2ID);
 
-        $user = User::reconstitute(5, self::VALID_NAME, self::VALID_EMAIL_VALUE, $hash);
+        $user = User::reconstitute(5, self::VALID_NAME, self::VALID_EMAIL_VALUE, $hash, null);
 
         $this->assertSame($hash, $user->getPasswordHash());
         $this->assertSame(5, $user->getId());
@@ -162,6 +162,31 @@ final class UserTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        User::reconstitute(1, '', self::VALID_EMAIL_VALUE, 'hash');
+        User::reconstitute(1, '', self::VALID_EMAIL_VALUE, 'hash', null);
+    }
+
+    public function testDeleteAnonymizesUser(): void
+    {
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
+        $user->assignId(7);
+        $now = new DateTimeImmutable('2026-10-11 18:00:00');
+
+        $user->delete($now);
+
+        $this->assertSame('Deleted user', $user->getName());
+        $this->assertSame('deleted_7@invalid.example', $user->getEmail()->getValue());
+        $this->assertSame('', $user->getPasswordHash());
+        $this->assertSame($now, $user->getDeletedAt());
+        $this->assertTrue($user->isDeleted());
+    }
+
+    public function testReconstituteAcceptsDeletedUser(): void
+    {
+        $deletedAt = new DateTimeImmutable('2026-10-11 18:00:00');
+
+        $user = User::reconstitute(3, 'Deleted user', 'deleted_3@invalid.example', '', $deletedAt);
+
+        $this->assertTrue($user->isDeleted());
+        $this->assertSame($deletedAt, $user->getDeletedAt());
     }
 }
