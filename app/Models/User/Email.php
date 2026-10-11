@@ -2,7 +2,7 @@
 
 namespace App\Models\User;
 
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
 
 final class Email
 {
@@ -13,7 +13,7 @@ final class Email
         $value = strtolower(trim($value));
 
         if (!filter_var($value, FILTER_VALIDATE_EMAIL) || strlen($value) > 320) {
-            throw new InvalidArgumentException('Invalid email');
+            throw new ValidationException('Invalid email');
         }
 
         $this->value = $value;
