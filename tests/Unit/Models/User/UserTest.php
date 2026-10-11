@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models\User;
 
+use App\Models\User\Email;
 use App\Models\User\User;
 use InvalidArgumentException;
 use LogicException;
@@ -11,12 +12,12 @@ use PHPUnit\Framework\TestCase;
 final class UserTest extends TestCase
 {
     private const VALID_NAME = 'John Doe';
-    private const VALID_EMAIL = 'john@email.com';
+    private const VALID_EMAIL_VALUE = 'john@email.com';
     private const VALID_PASSWORD = 'password123';
 
     public function testRegisterHashesThePassword(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertNotSame(self::VALID_PASSWORD, $user->getPasswordHash());
         $this->assertNull($user->getId());
@@ -24,14 +25,14 @@ final class UserTest extends TestCase
 
     public function testVerifyPasswordAcceptsCorrectPassword(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertTrue($user->verifyPassword(self::VALID_PASSWORD));
     }
 
     public function testVerifyPasswordRejectsWrongPassword(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertFalse($user->verifyPassword('wrong_password'));
     }
@@ -40,12 +41,12 @@ final class UserTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        User::register(self::VALID_NAME, self::VALID_EMAIL, str_repeat('a', 7));
+        User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, str_repeat('a', 7));
     }
 
     public function testShouldAcceptPasswordWithExactly8Chars(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, str_repeat('a', 8));
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, str_repeat('a', 8));
 
         $this->assertTrue($user->verifyPassword(str_repeat('a', 8)));
     }
@@ -55,7 +56,7 @@ final class UserTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        User::register($name, self::VALID_EMAIL, self::VALID_PASSWORD);
+        User::register($name, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
     }
 
     public static function invalidNames(): array
@@ -69,49 +70,21 @@ final class UserTest extends TestCase
 
     public function testShouldAcceptNameWithExactly150Chars(): void
     {
-        $user = User::register(str_repeat('a', 150), self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(str_repeat('a', 150), self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertSame(150, mb_strlen($user->getName()));
     }
 
     public function testShouldTrimName(): void
     {
-        $user = User::register('  John  ', self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register('  John  ', self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertSame('John', $user->getName());
     }
 
-    #[DataProvider('invalidEmails')]
-    public function testShouldThrowWhenEmailIsInvalid(string $email): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        User::register(self::VALID_NAME, $email, self::VALID_PASSWORD);
-    }
-
-    public static function invalidEmails(): array
-    {
-        return [
-            'blank' => ['  '],
-            'empty' => [''],
-            'no at sign' => ['johnemail.com'],
-            'no domain' => ['john@'],
-            'no local part' => ['@email.com'],
-            'with spaces inside' => ['jo hn@email.com'],
-            'too long' => [str_repeat('a', 320) . '@'],
-        ];
-    }
-
-    public function testShouldNormalizeEmail(): void
-    {
-        $user = User::register(self::VALID_NAME, '  John@Email.COM ', self::VALID_PASSWORD);
-
-        $this->assertSame('john@email.com', $user->getEmail());
-    }
-
     public function testAssignIdSetsTheId(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $user->assignId(10);
 
@@ -120,7 +93,7 @@ final class UserTest extends TestCase
 
     public function testShouldThrowWhenIdIsAlreadyAssigned(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
         $user->assignId(1);
 
         $this->expectException(LogicException::class);
@@ -132,7 +105,7 @@ final class UserTest extends TestCase
     {
         $hash = password_hash(self::VALID_PASSWORD, PASSWORD_ARGON2ID);
 
-        $user = User::reconstitute(5, self::VALID_NAME, self::VALID_EMAIL, $hash);
+        $user = User::reconstitute(5, self::VALID_NAME, self::VALID_EMAIL_VALUE, $hash);
 
         $this->assertSame($hash, $user->getPasswordHash());
         $this->assertSame(5, $user->getId());
@@ -141,7 +114,7 @@ final class UserTest extends TestCase
 
     public function testChangeNameKeepsOldValueWhenInvalid(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         try {
             $user->changeName('   ');
@@ -153,43 +126,34 @@ final class UserTest extends TestCase
 
     public function testChangeEmailKeepsOldValueWhenInvalid(): void
     {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         try {
             $user->changeEmail('invalid');
         } catch (InvalidArgumentException) {
         }
 
-        $this->assertSame(self::VALID_EMAIL, $user->getEmail());
-    }
-
-    public function testChangeEmailNormalizesValue(): void
-    {
-        $user = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
-
-        $user->changeEmail('  New@Email.COM ');
-
-        $this->assertSame('new@email.com', $user->getEmail());
+        $this->assertSame(self::VALID_EMAIL_VALUE, $user->getEmail()->getValue());
     }
 
     public function testShouldThrowWhenPasswordHasLessThan8MultibyteChars(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        User::register(self::VALID_NAME, self::VALID_EMAIL, 'áááá');
+        User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, 'áááá');
     }
 
     public function testShouldAcceptName150MultibyteChars(): void
     {
-        $user = User::register(str_repeat('á', 150), self::VALID_EMAIL, self::VALID_PASSWORD);
+        $user = User::register(str_repeat('á', 150), self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertSame(150, mb_strlen($user->getName()));
     }
 
     public function testSamePasswordGeneratesDifferentHashes(): void
     {
-        $first = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
-        $second = User::register(self::VALID_NAME, self::VALID_EMAIL, self::VALID_PASSWORD);
+        $first = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
+        $second = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
 
         $this->assertNotSame($first->getPasswordHash(), $second->getPasswordHash());
     }
@@ -198,6 +162,6 @@ final class UserTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        User::reconstitute(1, '', self::VALID_EMAIL, 'hash');
+        User::reconstitute(1, '', self::VALID_EMAIL_VALUE, 'hash');
     }
 }
