@@ -8,7 +8,7 @@ final class Connection
 {
     private function __construct() {}
 
-    public function create(array $config) : PDO
+    public static function create(array $config) : PDO
     {
         $dsn = "mysql:host={$config['host']};dbname={$config['name']};charset=utf8mb4";
 
