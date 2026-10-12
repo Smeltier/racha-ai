@@ -3,7 +3,7 @@
 namespace Tests\Unit\Models\User;
 
 use App\Models\User\Email;
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -57,7 +57,7 @@ final class EmailTest extends TestCase
     #[DataProvider('invalidEmails')]
     public function testShouldThrowWhenEmailIsInvalid(string $value) : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Email::from($value);
     }
 }
