@@ -137,7 +137,7 @@ final class User
             throw new ValidationException('Password must have at least 8 characters');
         }
 
-        return password_hash($plainPassword, PASSWORD_ARGON2ID);
+        return password_hash($plainPassword, PASSWORD_DEFAULT);
     }
 
     private function assertNotDeleted() : void
