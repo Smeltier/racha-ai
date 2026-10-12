@@ -5,7 +5,7 @@ namespace App\Models\User;
 use LogicException;
 use PDO;
 use PDOException;
-use RuntimeException;
+use App\Exceptions\EmailAlreadyInUseException;
 
 final class UserDAO
 {
@@ -36,7 +36,7 @@ final class UserDAO
             ]);
         } catch (PDOException $e) {
             if (($e->errorInfo[1] ?? null) == 1062) {
-                throw new RuntimeException("Email already in use", 0, $e);
+                throw new EmailAlreadyInUseException("Email already in use", 0, $e);
             }
             throw $e;
         }
@@ -71,7 +71,7 @@ final class UserDAO
             ]);
         } catch (PDOException $e) {
             if (($e->errorInfo[1] ?? null) == 1062) {
-                throw new RuntimeException("Email already in use", 0, $e);
+                throw new EmailAlreadyInUseException("Email already in use", 0, $e);
             }
 
             throw $e;
