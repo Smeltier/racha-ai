@@ -21,6 +21,7 @@ $userController = new UserController($userService, $session);
 
 $routes = [
     'GET' => [
+        '/' => [$userController, 'showLogin'],
         '/register' => [$userController, 'showRegister'],
         '/login' => [$userController, 'showLogin'],
         '/profile' => [$userController, 'showProfile'],
@@ -38,7 +39,7 @@ $routes = [
 $path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
 
-$handler = $router[$method][$path] ?? null;
+$handler = $routes[$method][$path] ?? null;
 
 if ($handler === null) {
     http_response_code(404);
