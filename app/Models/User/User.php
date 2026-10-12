@@ -25,11 +25,7 @@ final class User
 
     public static function register(string $name, string $email, string $plainPassword): self
     {
-        if (mb_strlen($plainPassword) < 8) {
-            throw new ValidationException('Password must have at least 8 characters');
-        }
-
-        return new self(null, $name, Email::from($email), password_hash($plainPassword, PASSWORD_ARGON2ID));
+        return new self(null, $name, Email::from($email), self::hashPassword($plainPassword));
     }
 
     public static function reconstitute(int $id, string $name, string $email, string $passwordHash, ?DateTimeImmutable $deletedAt = null): self
@@ -67,6 +63,17 @@ final class User
         $this->assertNotDeleted();
 
         $this->email = Email::from($email);
+    }
+
+    public function changePassword(string $currentPassword, string $newPassword) : void
+    {
+        $this->assertNotDeleted();
+
+        if (!$this->verifyPassword($currentPassword)) {
+            throw new ValidationException("Current password doesn't match");
+        }
+
+        $this->passwordHash = self::hashPassword($newPassword);
     }
 
     public function delete(DateTimeImmutable $now) : void
@@ -122,6 +129,15 @@ final class User
         }
 
         return $name;
+    }
+
+    private static function hashPassword(string $plainPassword) : string
+    {
+        if (mb_strlen($plainPassword) < 8) {
+            throw new ValidationException('Password must have at least 8 characters');
+        }
+
+        return password_hash($plainPassword, PASSWORD_ARGON2ID);
     }
 
     private function assertNotDeleted() : void
