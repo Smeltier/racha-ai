@@ -1,6 +1,10 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require __DIR__ . '/vendor/autoload.php';
 
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -10,7 +14,7 @@ use App\Controllers\UserController;
 use App\Models\User\UserDAO;
 use App\Services\UserService;
 
-$config = require __DIR__ . '/../config/database.php';
+$config = require __DIR__ . '/config/database.php';
 
 $session = new Session();
 $session->start();
@@ -36,7 +40,10 @@ $routes = [
     ],
 ];
 
-$path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') ?: '/';
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = '/' . trim(substr($requestUri, strlen($scriptDir)), '/');
+$path = $path === '/' ? '/' : rtrim($path, '/');
 $method = $_SERVER['REQUEST_METHOD'];
 
 $handler = $routes[$method][$path] ?? null;
