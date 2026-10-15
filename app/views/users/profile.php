@@ -32,7 +32,7 @@ require __DIR__ . '/../partials/header.php';
             <div class="alert" role="alert"><?= e($profileError) ?></div>
         <?php endif; ?>
 
-        <form class="form" method="post" action="/profile">
+        <form class="form" method="post" action="profile">
             <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
             <div class="form__group">
@@ -56,7 +56,7 @@ require __DIR__ . '/../partials/header.php';
             <div class="alert" role="alert"><?= e($passwordError) ?></div>
         <?php endif; ?>
 
-        <form class="form" method="post" action="/profile/password">
+        <form class="form" method="post" action="profile/password">
             <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
             <div class="form__group">
@@ -77,7 +77,7 @@ require __DIR__ . '/../partials/header.php';
         <h2>Excluir conta</h2>
         <p class="muted">Essa ação é permanente e não pode ser desfeita.</p>
 
-        <form method="post" action="/profile/delete" onsubmit="return confirm('Excluir sua conta permanentemente?')">
+        <form method="post" action="profile/delete" onsubmit="return confirm('Excluir sua conta permanentemente?')">
             <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
             <button class="btn btn--sm btn--danger" type="submit">Excluir minha conta</button>
         </form>
