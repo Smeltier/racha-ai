@@ -12,7 +12,7 @@ require __DIR__ . '/../partials/header.php';
 ?>
 
 <main>
-    <form class="card card--auth" method="post" action="/login">
+    <form class="card card--auth" method="post" action="login">
         <h1>Racha Aí</h1>
         <p class="subtitle">Entre para rachar suas despesas</p>
 
@@ -30,7 +30,7 @@ require __DIR__ . '/../partials/header.php';
 
         <button class="btn btn--block" type="submit">Entrar</button>
 
-        <p class="link muted">Novo membro? <a href="/register">Crie uma conta</a></p>
+        <p class="link muted">Novo membro? <a href="register">Crie uma conta</a></p>
     </form>
 </main>
 
