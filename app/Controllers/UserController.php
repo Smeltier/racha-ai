@@ -176,6 +176,6 @@ final class UserController
     private function render(string $view, array $data = []): void
     {
         extract($data);
-        require __DIR__ . '/../../public/views/' . $view . '.php';
+        require __DIR__ . '/../views/' . $view . '.php';
     }
 }
