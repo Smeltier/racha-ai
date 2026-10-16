@@ -13,7 +13,7 @@ require __DIR__ . '/../partials/header.php';
 ?>
 
 <main>
-    <form class="card card--auth" method="post" action="register">
+    <form class="card card--auth" method="post" action="">
         <h1>Racha Aí</h1>
         <p class="subtitle">Crie sua conta para rachar suas despesas</p>
 

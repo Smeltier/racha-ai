@@ -169,7 +169,8 @@ final class UserController
 
     private function redirect(string $path): never
     {
-        header('Location: ' . $path);
+        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+        header('Location: ' . $base . $path);
         exit;
     }
 
