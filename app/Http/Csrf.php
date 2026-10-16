@@ -14,5 +14,11 @@ final class Csrf
 
         return $_SESSION[self::KEY];
     }
+
+    public function isValid(?string $token) : bool
+    {
+        $stored = $_SESSION[self::KEY] ?? '';
+        return is_string($token) && $stored !== '' && hash_equals($stored, $token);
+    }
 }
 
