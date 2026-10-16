@@ -44,9 +44,18 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 $handler = $routes[$method][$path] ?? null;
 
+use App\Http\Csrf;
+
+$csrf = new Csrf();
+
 if ($handler === null) {
     http_response_code(404);
     echo 'Page not found';
+    exit;
+}
+
+if ($method === 'POST' && !$csrf->isValid($_POST['csrf_token'] ?? null)) {
+    header('Location: ' . rtrim($scriptDir, '/\\') . '/login');
     exit;
 }
 

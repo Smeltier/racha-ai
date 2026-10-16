@@ -3,7 +3,6 @@
 $error = $error ?? null;
 $name = $name ?? '';
 $email = $email ?? '';
-$csrfToken = $csrfToken ?? '';
 
 $title = 'Racha Aí (Cadastro)';
 $bodyClass = 'page page--center';
@@ -14,14 +13,14 @@ require __DIR__ . '/../partials/header.php';
 
 <main>
     <form class="card card--auth" method="post" action="">
+        <?= csrf_field() ?>
+
         <h1>Racha Aí</h1>
         <p class="subtitle">Crie sua conta para rachar suas despesas</p>
 
         <?php if ($error !== null): ?>
             <div class="alert" role="alert"><?= e($error) ?></div>
         <?php endif; ?>
-
-        <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <label class="sr-only" for="name">Nome</label>
         <input class="field" type="text" id="name" name="name" placeholder="Nome" value="<?= e($name) ?>" maxlength="150" autocomplete="name" required autofocus>
