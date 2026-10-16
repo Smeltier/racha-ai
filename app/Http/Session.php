@@ -5,31 +5,49 @@ namespace App\Http;
 final class Session
 {
     private const USER_ID_KEY = 'user_id';
+    private const IDLE_TIMEOUT = 1800;
+    private const ABSOLUTE_TIMEOUT = 28800;
 
     public function start() : void
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            return;
+        if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.gc_maxlifetime', (string) self::ABSOLUTE_TIMEOUT);
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'secure' => !empty($_SERVER['HTTPS']),
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+
+            session_start();
         }
 
-        ini_set('session.use_strict_mode', '1');
-        ini_set('session.use_only_cookies', '1');
+        $now = time();
+        if (isset($_SESSION['created_at'])) {
+            $idle = $now - ($_SESSION['last_activity'] ?? $now);
+            $age = $now - $_SESSION['created_at'];
 
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'secure' => !empty($_SERVER['HTTPS']),
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
+            if ($idle > self::IDLE_TIMEOUT || $age > self::ABSOLUTE_TIMEOUT) {
+                $_SESSION = [];
+                session_regenerate_id(true);
+                return;
+            }
 
-        session_start();
+            $_SESSION['last_activity'] = $now;
+        }
+
     }
 
     public function login(int $userId) : void
     {
         session_regenerate_id(true);
         $_SESSION[self::USER_ID_KEY] = $userId;
+        $_SESSION['created_at'] = time();
+        $_SESSION['last_activity'] = time();
     }
 
     public function logout() : void
