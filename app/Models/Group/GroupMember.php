@@ -21,4 +21,9 @@ final class GroupMember
     {
         return $this->role === GroupRole::Admin;
     }
+
+    public function withRole(GroupRole $role) : self
+    {
+        return new self($this->userId, $role, $this->joinedAt);
+    }
 }
