@@ -5,6 +5,7 @@ namespace App\Models\Group;
 use LogicException;
 use PDO;
 use PDOException;
+use Throwable;
 
 final class GroupDAO
 {
@@ -15,9 +16,31 @@ final class GroupDAO
         $this->pdo = $pdo;
     }
 
-    public function insert() : int
+    public function insert(Group $group) : void
     {
-        return 1;
+        $ownsTransaction = !$this->pdo->inTransaction();
+
+        if ($ownsTransaction) {
+            $this->pdo->beginTransaction();
+        }
+
+        try {
+            $this->insertGroup($group);
+
+            foreach ($group->getMembers() as $member) {
+                $this->insertMember($group->getId(), $member);
+            }
+
+            if ($ownsTransaction) {
+                $this->pdo->commit();
+            }
+        } catch (Throwable $e) {
+            if ($ownsTransaction) {
+                $this->pdo->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     public function update() : void
@@ -35,7 +58,7 @@ final class GroupDAO
         return [];
     }
 
-    private function insertGroup(Group $group) : int
+    private function insertGroup(Group $group)
     {
         if ($group->getId() !== null) {
             throw new LogicException('Group already persisted');
@@ -43,27 +66,35 @@ final class GroupDAO
 
         $stmt = $this->pdo->prepare(
             "INSERT INTO user_groups
-             (name)
-             VALUES (:name)"
+             (name, created_at)
+             VALUES (:name, :created_at)"
         );
 
-        try {
-            $stmt->execute(['name' => $group->getName()]);
-        } catch (PDOException $e) {
-            throw $e;
-        }
+        $stmt->execute([
+            ':name' => $group->getName(),
+            ':created_at' => $group->getCreatedAt()->format('Y-m-d H:i:s')
+        ]);
 
-        $id = (int) $this->pdo->lastInsertId();
-        $group->assignId($id);
-        return $id;
+        $group->assignId((int) $this->pdo->lastInsertId());
     }
 
     private function insertMember(int $groupId, GroupMember $member) : void
     {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO group_members
+             (group_id, user_id, role, joined_at)
+             VALUES (:group_id, :user_id, :role, :joined_at)"
+        );
 
+        $stmt->execute([
+            ':group_id' => $groupId,
+            ':user_id' => $member->userId,
+            ':role' => $member->role->value,
+            ':joined_at' => $member->joinedAt->format('Y-m-d H:i:s')
+        ]);
     }
 
-    private function deleteMember(int $groupId, int $memberId) : void
+    private function deleteMember(int $groupId, int $userId) : void
     {
 
     }
