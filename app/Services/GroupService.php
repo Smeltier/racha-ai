@@ -2,15 +2,12 @@
 
 namespace App\Services;
 
-use DateTimeImmutable;
 use LogicException;
 use App\Models\Group\Group;
 use App\Models\Group\GroupDAO;
 use App\Exceptions\GroupNotFoundException;
-use App\Models\Group\GroupMember;
-use App\Models\Group\GroupRole;
 
-class GroupService
+final class GroupService
 {
     public function __construct(
         private GroupDAO $dao
@@ -23,7 +20,7 @@ class GroupService
 
         return $group;
     }
-    
+
     public function delete(int $id) : void
     {
         $group = $this->getGroup($id);
