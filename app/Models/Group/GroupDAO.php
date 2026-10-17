@@ -2,6 +2,7 @@
 
 namespace App\Models\Group;
 
+use DateTimeImmutable;
 use LogicException;
 use PDO;
 use PDOException;
@@ -106,6 +107,28 @@ final class GroupDAO
 
     private function findByGroupId(int $groupId) : array
     {
-        return [];
+        $stmt = $this->pdo->prepare(
+            "SELECT user_id, role, joined_at
+            FROM group_members
+            WHERE group_id = :group_id"
+        );
+
+        $stmt->execute([':group_id' => $groupId]);
+
+        $members = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $tuple) {
+            $members[] = $this->mapMemberTuple($tuple);
+        }
+
+        return $members;
+    }
+
+    private function mapMemberTuple(array $tuple) : GroupMember
+    {
+        return new GroupMember(
+            (int) $tuple['user_id'],
+            GroupRole::from($tuple['role']),
+            new DateTimeImmutable($tuple['joined_at'])
+        );
     }
 }
