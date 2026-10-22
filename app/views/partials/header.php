@@ -3,6 +3,7 @@
 $title = $title ?? 'Racha Aí';
 $bodyClass = $bodyClass ?? 'page';
 $showNavbar = $showNavbar ?? false;
+$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 ?>
 <!DOCTYPE html>
@@ -12,7 +13,7 @@ $showNavbar = $showNavbar ?? false;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="public/style.css">
+    <link rel="stylesheet" href="<?= e($base . '/public/style.css') ?>">
 </head>
 <body class="<?= e($bodyClass) ?>">
 <?php if ($showNavbar): ?>

@@ -32,7 +32,7 @@ require __DIR__ . '/../partials/header.php';
 
             <div class="row">
                 <button class="btn btn--sm" type="submit">Criar grupo</button>
-                <a class="btn btn--sm btn--ghost" href="/groups">Cancelar</a>
+                <button class="btn btn--sm btn--ghost" type="button" onclick="window.location.href='/groups'">Cancelar</button>
             </div>
         </form>
     </section>
