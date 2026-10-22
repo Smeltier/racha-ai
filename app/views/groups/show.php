@@ -25,7 +25,7 @@ require __DIR__ . '/../partials/header.php';
         <?php foreach ($group->getMembers() as $member): ?>
             <div class="list-item">
                 <div>
-                    <div class="list-item__title">Usuário #<?= e((string) $member->userId) ?></div>
+                    <div class="list-item__title">Usuário: <?= e((string) $member->userId) ?></div>
                     <div class="muted">
                         Desde <?= e($member->joinedAt->format('d/m/Y')) ?>
                     </div>

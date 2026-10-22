@@ -13,12 +13,13 @@ require __DIR__ . '/../partials/header.php';
 ?>
 
 <main class="container">
-    <section class="row">
+    <section class="card row">
         <div>
             <h1>Meus grupos</h1>
             <p class="muted">Organize as despesas compartilhadas em um só lugar.</p>
         </div>
-        <a class="btn btn--sm" href="/groups/create">Criar grupo</a>
+
+        <button class="btn btn--sm" type="button" onclick="window.location.href='/groups/create'">Criar grupo</button>
     </section>
 
     <section class="card">
