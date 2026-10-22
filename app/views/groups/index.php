@@ -13,7 +13,7 @@ require __DIR__ . '/../partials/header.php';
 ?>
 
 <main class="container">
-    <section class="row">
+    <section class="card row">
         <div>
             <h1>Meus grupos</h1>
             <p class="muted">Organize as despesas compartilhadas em um só lugar.</p>
