@@ -31,3 +31,17 @@ Not in the first version: recording payments between members (settling up). It c
 * HTML, CSS and JavaScript
 * Composer with PSR 4 autoloading
 * PHPUnit for automated tests
+
+## Local development
+
+Start the MySQL container, then run the PHP development server from the project
+root:
+
+```sh
+docker compose up -d
+php -S localhost:8000 -t .
+```
+
+The local database connection uses `127.0.0.1` by default, matching the MySQL
+port published by Docker Compose. Set `DB_HOST` to the Docker service hostname
+when PHP runs inside a container.
