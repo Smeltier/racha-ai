@@ -19,7 +19,7 @@ require __DIR__ . '/../partials/header.php';
             <p class="muted">Organize as despesas compartilhadas em um só lugar.</p>
         </div>
 
-        <button class="btn btn--sm" type="button" onclick="window.location.href='/groups/create'">Criar grupo</button>
+        <button class="btn btn--sm" type="button" onclick="window.location.href='<?= e($base . '/groups/create') ?>'">Criar grupo</button>
     </section>
 
     <section class="card">
