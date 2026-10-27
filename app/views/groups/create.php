@@ -23,7 +23,7 @@ require __DIR__ . '/../partials/header.php';
             <div class="alert" role="alert"><?= e($error) ?></div>
         <?php endif; ?>
 
-        <form class="form" method="post" action="/groups">
+        <form class="form" method="post" action="<?= e($base . '/groups') ?>">
             <?= csrf_field() ?>
 
             <div class="form__group">
