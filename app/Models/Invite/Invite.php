@@ -13,16 +13,30 @@ final class Invite
         private int $groupId,
         private InviteStatus $status,
         private DateTimeImmutable $createdAt,
+        private DateTimeImmutable $expiresAt
     ) {}
 
     public static function create(int $invitedUserId, int $groupId) : self
     {
-        return new self(null, $invitedUserId, $groupId, InviteStatus::Pending, new DateTimeImmutable());
+        return new self(
+            null,
+            $invitedUserId,
+            $groupId,
+            InviteStatus::Pending,
+            new DateTimeImmutable(),
+            new DateTimeImmutable('+7 days')
+        );
     }
 
-    public static function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt) : self
+    public static function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt, DateTimeImmutable $expiresAt) : self
     {
-        return new self($id, $invitedUserId, $groupId, $status, $createdAt);
+        $now = new DateTimeImmutable();
+
+        if ($expiresAt < $now) {
+            $status = InviteStatus::Expired;
+        }
+
+        return new self($id, $invitedUserId, $groupId, $status, $createdAt, $expiresAt);
     }
 
     public function accept() : void
@@ -85,5 +99,10 @@ final class Invite
     public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getExpiresAt() : DateTimeImmutable
+    {
+        return $this->expiresAt;
     }
 }
