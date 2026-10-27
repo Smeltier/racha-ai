@@ -6,6 +6,8 @@ $name = $name ?? '';
 $title = 'Racha Aí (Criar grupo)';
 $showNavbar = true;
 
+$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
 require __DIR__ . '/../partials/header.php';
 
 ?>
@@ -32,7 +34,7 @@ require __DIR__ . '/../partials/header.php';
 
             <div class="row">
                 <button class="btn btn--sm" type="submit">Criar grupo</button>
-                <button class="btn btn--sm btn--ghost" type="button" onclick="window.location.href='/groups'">Cancelar</button>
+                <button class="btn btn--sm btn--ghost" type="button" onclick="window.location.href='<?= e($base . '/groups/') ?>'">Cancelar</button>
             </div>
         </form>
     </section>
