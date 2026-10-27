@@ -20,8 +20,8 @@ $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
     <header class="navbar">
         <span class="navbar__brand">Racha Aí</span>
         <nav class="navbar__links">
-            <a href="groups">Grupos</a>
-            <a href="profile">Perfil</a>
+            <a href="<?= e($base . '/groups/') ?>">Grupos</a>
+            <a href="<?= e($base . '/profile') ?>">Perfil</a>
         </nav>
         <form method="post" action="logout">
             <?= csrf_field() ?>
