@@ -15,12 +15,12 @@ final class Invite
         private DateTimeImmutable $createdAt,
     ) {}
 
-    public function create(int $invitedUserId, int $groupId) : self
+    public static function create(int $invitedUserId, int $groupId) : self
     {
         return new self(null, $invitedUserId, $groupId, InviteStatus::Pending, new DateTimeImmutable());
     }
 
-    public function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt) : self
+    public static function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt) : self
     {
         return new self($id, $invitedUserId, $groupId, $status, $createdAt);
     }
