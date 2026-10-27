@@ -31,16 +31,24 @@ final class Invite
     public static function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt, DateTimeImmutable $expiresAt) : self
     {
         $now = new DateTimeImmutable();
-
-        if ($expiresAt < $now) {
+        if ($status == InviteStatus::Pending && $expiresAt <= $now) {
             $status = InviteStatus::Expired;
         }
 
-        return new self($id, $invitedUserId, $groupId, $status, $createdAt, $expiresAt);
+        return new self(
+            $id,
+            $invitedUserId,
+            $groupId,
+            $status,
+            $createdAt,
+            $expiresAt
+        );
     }
 
     public function accept() : void
     {
+        $this->expireIfNecessary(new DateTimeImmutable());
+
         if ($this->status !== InviteStatus::Pending) {
             throw new LogicException("Cannot accept an invite that is not pending");
         }
@@ -50,6 +58,8 @@ final class Invite
 
     public function decline() : void
     {
+        $this->expireIfNecessary(new DateTimeImmutable());
+
         if ($this->status !== InviteStatus::Pending) {
             throw new LogicException("Cannot decline an invite that is not pending");
         }
@@ -59,6 +69,8 @@ final class Invite
 
     public function expire() : void
     {
+        $this->expireIfNecessary(new DateTimeImmutable());
+
         if ($this->status !== InviteStatus::Pending) {
             throw new LogicException("Cannot expire an invite that is not pending");
         }
@@ -74,6 +86,11 @@ final class Invite
     public function isExpired() : bool
     {
         return $this->status === InviteStatus::Expired;
+    }
+
+    public function isExpiredAt(DateTimeImmutable $dateTime) : bool
+    {
+        return $this->status === InviteStatus::Expired || ($this->expiresAt <= $dateTime && $this->status === InviteStatus::Pending);
     }
 
     public function getId() : ?int
@@ -104,5 +121,12 @@ final class Invite
     public function getExpiresAt() : DateTimeImmutable
     {
         return $this->expiresAt;
+    }
+
+    private function expireIfNecessary(DateTimeImmutable $now) : void
+    {
+        if ($this->status === InviteStatus::Pending && $this->expiresAt <= $now) {
+            $this->status = InviteStatus::Expired;
+        }
     }
 }
