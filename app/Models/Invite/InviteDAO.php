@@ -38,4 +38,16 @@ final class InviteDAO
     public function findByInvitedUserIdAndInviteStatus(int $invitedUserId, InviteStatus $status) : array
     {
     }
+
+    private function mapTuple(array $tuple) : Invite
+    {
+        return Invite::reconstitute(
+            $tuple['id'],
+            $tuple['invited_user_id'],
+            $tuple['group_id'],
+            InviteStatus::from($tuple['status']),
+            new DateTimeImmutable($tuple['created_at']),
+            new DateTimeImmutable($tuple['expires_at'])
+        );
+    }
 }
