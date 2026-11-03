@@ -28,7 +28,7 @@ final class Invite
         );
     }
 
-    public static function restore(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt, DateTimeImmutable $expiresAt) : self
+    public static function reconstitute(int $id, int $invitedUserId, int $groupId, InviteStatus $status, DateTimeImmutable $createdAt, DateTimeImmutable $expiresAt) : self
     {
         $now = new DateTimeImmutable();
         if ($status == InviteStatus::Pending && $expiresAt <= $now) {
