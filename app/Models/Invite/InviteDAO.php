@@ -16,7 +16,7 @@ final class InviteDAO
         $this->pdo = $pdo;
     }
 
-    public function insert(Invite $invite) : int
+    public function insert(Invite $invite) : void
     {
         if ($invite->getId() !== null) {
             throw new LogicException('Invite already persisted');
@@ -42,7 +42,8 @@ final class InviteDAO
             throw $e;
         }
 
-        return (int) $this->pdo->lastInsertId();
+        $id = (int) $this->pdo->lastInsertId();
+        $invite->assignId($id);
     }
 
     public function update(Invite $invite) : void
