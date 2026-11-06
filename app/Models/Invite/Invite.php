@@ -93,6 +93,15 @@ final class Invite
         return $this->status === InviteStatus::Expired || ($this->expiresAt <= $dateTime && $this->status === InviteStatus::Pending);
     }
 
+    public function assignId(int $id) : void
+    {
+        if ($this->id !== null) {
+            throw new LogicException("Cannot assign an ID to an invite that already has one");
+        }
+
+        $this->id = $id;
+    }
+
     public function getId() : ?int
     {
         return $this->id;
