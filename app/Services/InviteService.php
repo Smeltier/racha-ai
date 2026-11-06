@@ -152,14 +152,14 @@ final class InviteService
         return $invite;
     }
 
-    public function findAllForUser(int $invitedUserId) : array
+    public function findAllForUser(int $userId) : array
     {
-        return $this->inviteDao->findByInvitedUserId($invitedUserId);
+        return $this->inviteDao->findByInvitedUserId($userId);
     }
 
-    public function findAllForUserByStatus(int $invitedUserId, InviteStatus $status) : array
+    public function findAllForUserByStatus(int $userId, InviteStatus $status) : array
     {
-        return $this->inviteDao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
+        return $this->inviteDao->findByInvitedUserIdAndInviteStatus($userId, $status);
     }
 
     public function findByGroupId(int $groupId, int $userId) : array
