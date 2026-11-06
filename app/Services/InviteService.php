@@ -26,28 +26,56 @@ final class InviteService
             throw new LogicException('Cannot invite yourself to a group');
         }
 
-        $group = $this->groupDao->findById($groupId);
+        $ownsTransaction = !$this->pdo->inTransaction();
 
-        if ($group === null) {
-            throw new LogicException('Group not found');
+        if ($ownsTransaction) {
+            $this->pdo->beginTransaction();
         }
 
-        if (!$group->isAdmin($inviterUserId)) {
-            throw new LogicException('Only group admins can invite users');
-        }
-
-        if ($this->userDao->findById($invitedUserId) === null) {
-            throw new LogicException('User not found');
-        }
-
-        if ($group->hasMember($invitedUserId)) {
-            throw new LogicException('User is already a member of the group');
-        }
+        try {
+            $existingInvite = $this->inviteDao->findByInvitedUserIdAndGroupId($invitedUserId, $groupId);
     
-        $invite = Invite::create($invitedUserId, $groupId);
-        $this->inviteDao->insert($invite);
+            if ($existingInvite !== null) {
+                if ($existingInvite->isPending()) {
+                    throw new LogicException('An invite is already pending for this user and group');
+                }
+    
+                $this->inviteDao->delete($existingInvite->getId());
+            }
+            
+            $group = $this->groupDao->findById($groupId);
+    
+            if ($group === null) {
+                throw new LogicException('Group not found');
+            }
+    
+            if (!$group->isAdmin($inviterUserId)) {
+                throw new LogicException('Only group admins can invite users');
+            }
+    
+            if ($this->userDao->findById($invitedUserId) === null) {
+                throw new LogicException('User not found');
+            }
+    
+            if ($group->hasMember($invitedUserId)) {
+                throw new LogicException('User is already a member of the group');
+            }
+        
+            $invite = Invite::create($invitedUserId, $groupId);
+            $this->inviteDao->insert($invite);
 
-        return $invite;
+            if ($ownsTransaction) {
+                $this->pdo->commit();
+            }
+    
+            return $invite;
+        } catch (Throwable $e) {
+            if ($ownsTransaction && $this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     public function cancel(int $inviteId, int $userId) : void
@@ -107,9 +135,21 @@ final class InviteService
         $this->inviteDao->update($invite);
     }
 
-    public function findById(int $inviteId, int $userId) : Invite
+    public function findForUser(int $inviteId, int $userId) : Invite
     {
         return $this->getInviteForUser($inviteId, $userId);
+    }
+
+    public function findForGroupAdmin(int $inviteId, int $userId) : Invite
+    {
+        $invite = $this->getInvite($inviteId);
+        $group = $this->groupDao->findById($invite->getGroupId());
+
+        if ($group === null || !$group->isAdmin($userId)) {
+            throw new LogicException('Invite not found');
+        }
+
+        return $invite;
     }
 
     public function findByInvitedUserId(int $invitedUserId) : array
