@@ -12,36 +12,54 @@ use App\Models\User\UserDAO;
 final class InviteService
 {
     public function __construct(
-        private InviteDAO $dao,
+        private InviteDAO $inviteDao,
         private GroupDAO $groupDao,
         private UserDAO $userDao
     ) {}
 
-    public function create(int $invitedUserId, int $groupId) : Invite
+    public function create(int $inviterUserId, int $invitedUserId, int $groupId) : Invite
     {
+        $group = $this->groupDao->findById($groupId);
+
+        if ($group === null) {
+            throw new LogicException('Group not found');
+        }
+
+        if ($group->isAdmin($inviterUserId)) {
+            throw new LogicException('Only group admins can invite users');
+        }
+
+        if ($this->userDao->findById($invitedUserId) === null) {
+            throw new LogicException('User not found');
+        }
+
+        if ($group->hasMember($invitedUserId)) {
+            throw new LogicException('User is already a member of the group');
+        }
+    
         $invite = Invite::create($invitedUserId, $groupId);
-        $this->dao->insert($invite);
+        $this->inviteDao->insert($invite);
 
         return $invite;
     }
 
     public function delete(int $id) : void
     {
-        $this->dao->delete($id);
+        $this->inviteDao->delete($id);
     }
 
     public function accept(int $id) : void
     {
         $invite = $this->getInvite($id);
         $invite->accept();
-        $this->dao->update($invite);
+        $this->inviteDao->update($invite);
     }
 
     public function decline(int $id) : void
     {
         $invite = $this->getInvite($id);
         $invite->decline();
-        $this->dao->update($invite);
+        $this->inviteDao->update($invite);
     }
 
     public function findById(int $id) : Invite
@@ -51,22 +69,22 @@ final class InviteService
 
     public function findByInvitedUserId(int $invitedUserId) : array
     {
-        return $this->dao->findByInvitedUserId($invitedUserId);
+        return $this->inviteDao->findByInvitedUserId($invitedUserId);
     }
 
     public function findByInvitedUserIdAndInviteStatus(int $invitedUserId, InviteStatus $status) : array
     {
-        return $this->dao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
+        return $this->inviteDao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
     }
 
     public function findByGroupId(int $groupId) : array
     {
-        return $this->dao->findByGroupId($groupId);
+        return $this->inviteDao->findByGroupId($groupId);
     }
 
     private function getInvite(int $id) : Invite
     {
-        $invite = $this->dao->findById($id);
+        $invite = $this->inviteDao->findById($id);
 
         if ($invite === null) {
             throw new LogicException('Invite not found');
