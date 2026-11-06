@@ -27,11 +27,11 @@ final class InviteDAO
             VALUES (:invited_user_id, :group_id, :status, :created_at, :expires_at)
         ");
 
-        $stmt->bindParam(':invited_user_id', $invite->getInvitedUserId());
-        $stmt->bindParam(':group_id', $invite->getGroupId());
-        $stmt->bindParam(':status', $invite->getStatus()->value);
-        $stmt->bindParam(':created_at', $invite->getCreatedAt()->format('Y-m-d H:i:s'));
-        $stmt->bindParam(':expires_at', $invite->getExpiresAt()->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':invited_user_id', $invite->getInvitedUserId(), PDO::PARAM_INT);
+        $stmt->bindValue(':group_id', $invite->getGroupId(), PDO::PARAM_INT);
+        $stmt->bindValue(':status', $invite->getStatus()->value, PDO::PARAM_STR);
+        $stmt->bindValue(':created_at', $invite->getCreatedAt()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', $invite->getExpiresAt()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         try {
             $stmt->execute();
@@ -58,8 +58,8 @@ final class InviteDAO
             WHERE id = :id
         ");
 
-        $stmt->bindParam(':status', $invite->getStatus()->value);
-        $stmt->bindParam(':id', $invite->getId());
+        $stmt->bindValue(':status', $invite->getStatus()->value, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $invite->getId(), PDO::PARAM_INT);
 
         try {
             $stmt->execute();
@@ -75,7 +75,7 @@ final class InviteDAO
             WHERE id = :id
         ");
 
-        $stmt->bindParam(':id', $id);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
         try {
             $stmt->execute();
@@ -92,7 +92,7 @@ final class InviteDAO
             WHERE id = :id
         ");
 
-        $stmt->bindParam(':id', $id);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
         try {
             $stmt->execute();
@@ -112,7 +112,7 @@ final class InviteDAO
             WHERE invited_user_id = :invitedUserId
         ");
 
-        $stmt->bindParam(':invitedUserId', $invitedUserId);
+        $stmt->bindValue(':invitedUserId', $invitedUserId, PDO::PARAM_INT);
 
         try {
             $stmt->execute();
@@ -136,7 +136,7 @@ final class InviteDAO
             WHERE group_id = :groupId
         ");
 
-        $stmt->bindParam(':groupId', $groupId);
+        $stmt->bindValue(':groupId', $groupId, PDO::PARAM_INT);
 
         try {
             $stmt->execute();
@@ -160,8 +160,8 @@ final class InviteDAO
             WHERE invited_user_id = :invitedUserId AND status = :status
         ");
 
-        $stmt->bindParam(':invitedUserId', $invitedUserId);
-        $stmt->bindParam(':status', $status->value);
+        $stmt->bindValue(':invitedUserId', $invitedUserId, PDO::PARAM_INT);
+        $stmt->bindValue(':status', $status->value, PDO::PARAM_STR);
 
         try {
             $stmt->execute();
