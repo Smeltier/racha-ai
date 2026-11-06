@@ -22,6 +22,10 @@ final class InviteService
 
     public function create(int $inviterUserId, int $invitedUserId, int $groupId) : Invite
     {
+        if ($inviterUserId === $invitedUserId) {
+            throw new LogicException('Cannot invite yourself to a group');
+        }
+
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null) {
@@ -48,11 +52,15 @@ final class InviteService
 
     public function cancel(int $inviteId, int $userId) : void
     {
-        $invite = $this->getInviteForUser($inviteId, $userId);
+        $invite = $this->getInvite($inviteId);
         $group = $this->groupDao->findById($invite->getGroupId());
 
         if ($group === null || !$group->isAdmin($userId)) {
             throw new LogicException('Invite not found');
+        }
+
+        if (!$invite->isPending()) {
+            throw new LogicException('Only pending invites can be canceled');
         }
 
         $this->inviteDao->delete($inviteId);
@@ -99,9 +107,9 @@ final class InviteService
         $this->inviteDao->update($invite);
     }
 
-    public function findById(int $inviteId) : Invite
+    public function findById(int $inviteId, int $userId) : Invite
     {
-        return $this->getInvite($inviteId);
+        return $this->getInviteForUser($inviteId, $userId);
     }
 
     public function findByInvitedUserId(int $invitedUserId) : array
@@ -116,13 +124,13 @@ final class InviteService
 
     public function findByGroupId(int $groupId, int $userId) : array
     {
-        $group = $this->inviteDao->findByGroupId($groupId);
+        $group = $this->groupDao->findById($groupId);
 
-        if ($group === null || !$group->hasMember($userId)) {
+        if ($group === null || !$group->isAdmin($userId)) {
             throw new LogicException('Group not found');
         }
 
-        return $group;
+        return $this->inviteDao->findByGroupId($groupId);
     }
 
     private function getInvite(int $inviteId) : Invite
