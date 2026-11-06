@@ -53,9 +53,9 @@ final class InviteService
         return $this->dao->findByInvitedUserId($invitedUserId);
     }
 
-    public function findByInvitedUserIdAndStatus(int $invitedUserId, InviteStatus $status) : array
+    public function findByInvitedUserIdAndInviteStatus(int $invitedUserId, InviteStatus $status) : array
     {
-        return $this->dao->findByInvitedUserIdAndStatus($invitedUserId, $status);
+        return $this->dao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
     }
 
     public function findByGroupId(int $groupId) : array
