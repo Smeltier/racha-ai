@@ -122,7 +122,7 @@ final class InviteService
         $invite = $this->getInvite($inviteId);
 
         if ($invite->getInvitedUserId() !== $userId) {
-            throw new LogicException('User is not the invited user for this invite');
+            throw new LogicException('Invite not found');
         }
 
         return $invite;
