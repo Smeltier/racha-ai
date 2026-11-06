@@ -84,7 +84,7 @@ final class InviteService
                 $this->pdo->commit();
             }
         } catch (Throwable $e) {
-            if ($this->pdo->inTransaction()) {
+            if ($ownsTransaction && $this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
 
