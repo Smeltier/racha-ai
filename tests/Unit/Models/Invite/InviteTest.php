@@ -28,12 +28,12 @@ final class InviteTest extends TestCase
         $this->assertLessThanOrEqual($after, $invite->getCreatedAt());
     }
 
-    public function testRestoreKeepsTheGivenData() : void
+    public function testReconstituteKeepsTheGivenData() : void
     {
         $createdAt = new DateTimeImmutable();
         $expiresAt = new DateTimeImmutable('+1 week');
 
-        $invite = Invite::restore(15, 2, 10, InviteStatus::Pending, $createdAt, $expiresAt);
+        $invite = Invite::reconstitute(15, 2, 10, InviteStatus::Pending, $createdAt, $expiresAt);
 
         $this->assertSame(15, $invite->getId());
         $this->assertSame(2, $invite->getInvitedUserId());
@@ -44,9 +44,9 @@ final class InviteTest extends TestCase
     }
 
     #[DataProvider('statuses')]
-    public function testRestoreAcceptsEveryStatus(InviteStatus $status): void
+    public function testReconstituteAcceptsEveryStatus(InviteStatus $status): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -112,7 +112,7 @@ final class InviteTest extends TestCase
         $expiresAt = new DateTimeImmutable('2026-10-27 10:00:00');
         $now = new DateTimeImmutable('2026-10-27 10:00:01');
 
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -126,7 +126,7 @@ final class InviteTest extends TestCase
 
     public function testAcceptedInviteIsNotExpiredAtEvenAfterExpirationDate(): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -143,7 +143,7 @@ final class InviteTest extends TestCase
     #[DataProvider('nonPendingStatuses')]
     public function testAcceptThrowsWhenInviteIsNotPending(InviteStatus $status): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -160,7 +160,7 @@ final class InviteTest extends TestCase
     #[DataProvider('nonPendingStatuses')]
     public function testDeclineThrowsWhenInviteIsNotPending(InviteStatus $status): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -177,7 +177,7 @@ final class InviteTest extends TestCase
     #[DataProvider('nonPendingStatuses')]
     public function testExpireThrowsWhenInviteIsNotPending(InviteStatus $status): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -202,7 +202,7 @@ final class InviteTest extends TestCase
 
     public function testAcceptKeepsStatusWhenInviteIsAlreadyDeclined(): void
     {
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
@@ -224,7 +224,7 @@ final class InviteTest extends TestCase
         $createdAt = new DateTimeImmutable();
         $expiresAt = new DateTimeImmutable('+1 week');
 
-        $invite = Invite::restore(
+        $invite = Invite::reconstitute(
             15,
             2,
             10,
