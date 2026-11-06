@@ -19,7 +19,7 @@ final class InviteService
     public function create(int $invitedUserId, int $groupId) : Invite
     {
         $invite = Invite::create($invitedUserId, $groupId);
-        $id = $this->dao->insert($invite);
+        $this->dao->insert($invite);
 
         return $invite;
     }
