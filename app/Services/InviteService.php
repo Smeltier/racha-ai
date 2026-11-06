@@ -48,16 +48,16 @@ final class InviteService
         $this->inviteDao->delete($inviteId);
     }
 
-    public function accept(int $inviteId) : void
+    public function accept(int $inviteId, int $userId) : void
     {
-        $invite = $this->getInvite($inviteId);
+        $invite = $this->getInviteForUser($inviteId, $userId);
         $invite->accept();
         $this->inviteDao->update($invite);
     }
 
-    public function decline(int $inviteId) : void
+    public function decline(int $inviteId, int $userId) : void
     {
-        $invite = $this->getInvite($inviteId);
+        $invite = $this->getInviteForUser($inviteId, $userId);
         $invite->decline();
         $this->inviteDao->update($invite);
     }
@@ -88,6 +88,17 @@ final class InviteService
 
         if ($invite === null) {
             throw new LogicException('Invite not found');
+        }
+
+        return $invite;
+    }
+
+    private function getInviteForUser(int $inviteId, int $userId) : Invite
+    {
+        $invite = $this->getInvite($inviteId);
+
+        if ($invite->getInvitedUserId() !== $userId) {
+            throw new LogicException('User is not the invited user for this invite');
         }
 
         return $invite;
