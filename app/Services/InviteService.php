@@ -26,6 +26,24 @@ final class InviteService
             throw new LogicException('Cannot invite yourself to a group');
         }
 
+        $group = $this->groupDao->findById($groupId);
+
+        if ($group === null) {
+            throw new LogicException('Group not found');
+        }
+
+        if (!$group->isAdmin($inviterUserId)) {
+            throw new LogicException('Only group admins can invite users');
+        }
+
+        if ($this->userDao->findById($invitedUserId) === null) {
+            throw new LogicException('User not found');
+        }
+
+        if ($group->hasMember($invitedUserId)) {
+            throw new LogicException('User is already a member of the group');
+        }
+
         $ownsTransaction = !$this->pdo->inTransaction();
 
         if ($ownsTransaction) {
@@ -41,24 +59,6 @@ final class InviteService
                 }
     
                 $this->inviteDao->delete($existingInvite->getId());
-            }
-            
-            $group = $this->groupDao->findById($groupId);
-    
-            if ($group === null) {
-                throw new LogicException('Group not found');
-            }
-    
-            if (!$group->isAdmin($inviterUserId)) {
-                throw new LogicException('Only group admins can invite users');
-            }
-    
-            if ($this->userDao->findById($invitedUserId) === null) {
-                throw new LogicException('User not found');
-            }
-    
-            if ($group->hasMember($invitedUserId)) {
-                throw new LogicException('User is already a member of the group');
             }
         
             $invite = Invite::create($invitedUserId, $groupId);
@@ -152,12 +152,12 @@ final class InviteService
         return $invite;
     }
 
-    public function findByInvitedUserId(int $invitedUserId) : array
+    public function findAllForUser(int $invitedUserId) : array
     {
         return $this->inviteDao->findByInvitedUserId($invitedUserId);
     }
 
-    public function findByInvitedUserIdAndInviteStatus(int $invitedUserId, InviteStatus $status) : array
+    public function findAllForUserByStatus(int $invitedUserId, InviteStatus $status) : array
     {
         return $this->inviteDao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
     }
