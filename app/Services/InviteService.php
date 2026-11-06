@@ -114,9 +114,15 @@ final class InviteService
         return $this->inviteDao->findByInvitedUserIdAndInviteStatus($invitedUserId, $status);
     }
 
-    public function findByGroupId(int $groupId) : array
+    public function findByGroupId(int $groupId, int $userId) : array
     {
-        return $this->inviteDao->findByGroupId($groupId);
+        $group = $this->inviteDao->findByGroupId($groupId);
+
+        if ($group === null || !$group->hasMember($userId)) {
+            throw new LogicException('Group not found');
+        }
+
+        return $group;
     }
 
     private function getInvite(int $inviteId) : Invite
