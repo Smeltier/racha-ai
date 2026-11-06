@@ -46,8 +46,15 @@ final class InviteService
         return $invite;
     }
 
-    public function delete(int $inviteId) : void
+    public function cancel(int $inviteId, int $userId) : void
     {
+        $invite = $this->getInviteForUser($inviteId, $userId);
+        $group = $this->groupDao->findById($invite->getGroupId());
+
+        if ($group === null || !$group->isAdmin($userId)) {
+            throw new LogicException('Invite not found');
+        }
+
         $this->inviteDao->delete($inviteId);
     }
 
