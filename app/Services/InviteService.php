@@ -48,14 +48,14 @@ final class InviteService
         return $this->getInvite($id);
     }
 
-    public function findByUserId(int $invitedUserId) : array
+    public function findByInvitedUserId(int $invitedUserId) : array
     {
-        return $this->dao->findByUserId($invitedUserId);
+        return $this->dao->findByInvitedUserId($invitedUserId);
     }
 
-    public function findByUserIdAndStatus(int $invitedUserId, InviteStatus $status) : array
+    public function findByInvitedUserIdAndStatus(int $invitedUserId, InviteStatus $status) : array
     {
-        return $this->dao->findByUserIdAndStatus($invitedUserId, $status);
+        return $this->dao->findByInvitedUserIdAndStatus($invitedUserId, $status);
     }
 
     public function findByGroupId(int $groupId) : array
