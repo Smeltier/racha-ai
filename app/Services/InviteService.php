@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use LogicException;
+use Throwable;
+use PDO;
 use App\Models\Invite\Invite;
 use App\Models\Invite\InviteDAO;
 use App\Models\Invite\InviteStatus;
@@ -14,7 +16,8 @@ final class InviteService
     public function __construct(
         private InviteDAO $inviteDao,
         private GroupDAO $groupDao,
-        private UserDAO $userDao
+        private UserDAO $userDao,
+        private PDO $pdo
     ) {}
 
     public function create(int $inviterUserId, int $invitedUserId, int $groupId) : Invite
@@ -51,8 +54,29 @@ final class InviteService
     public function accept(int $inviteId, int $userId) : void
     {
         $invite = $this->getInviteForUser($inviteId, $userId);
-        $invite->accept();
-        $this->inviteDao->update($invite);
+        $group = $this->groupDao->findById($invite->getGroupId());
+
+        if ($group === null) {
+            throw new LogicException('Group not found');
+        }
+
+        $this->pdo->beginTransaction();
+
+        try {
+            $invite->accept();
+            $group->addMember($userId);
+    
+            $this->groupDao->update($group);
+            $this->inviteDao->update($invite);
+
+            $this->pdo->commit();
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            
+            throw $e;
+        }
     }
 
     public function decline(int $inviteId, int $userId) : void
