@@ -28,7 +28,7 @@ final class InviteService
             throw new LogicException('Group not found');
         }
 
-        if ($group->isAdmin($inviterUserId)) {
+        if (!$group->isAdmin($inviterUserId)) {
             throw new LogicException('Only group admins can invite users');
         }
 
@@ -74,7 +74,7 @@ final class InviteService
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            
+
             throw $e;
         }
     }
