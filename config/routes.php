@@ -25,5 +25,4 @@ return [
     ['POST', '/invites/{id}/accept', InviteController::class, 'accept'],
     ['POST', '/invites/{id}/decline', InviteController::class, 'decline'],
     ['POST', '/invites/{id}/cancel', InviteController::class, 'cancel'],
-    ['POST', '/invites/{id}/delete', InviteController::class, 'delete'],
 ];
