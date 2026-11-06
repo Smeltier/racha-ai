@@ -6,15 +6,16 @@ use LogicException;
 use App\Models\Invite\Invite;
 use App\Models\Invite\InviteDAO;
 use App\Models\Invite\InviteStatus;
+use App\Models\Group\GroupDAO;
+use App\Models\User\UserDAO;
 
 final class InviteService
 {
-    private InviteDAO $dao;
-
-    public function __construct(InviteDAO $dao)
-    {
-        $this->dao = $dao;
-    }
+    public function __construct(
+        private InviteDAO $dao,
+        private GroupDAO $groupDao,
+        private UserDAO $userDao
+    ) {}
 
     public function create(int $invitedUserId, int $groupId) : Invite
     {
