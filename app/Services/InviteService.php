@@ -60,7 +60,11 @@ final class InviteService
             throw new LogicException('Group not found');
         }
 
-        $this->pdo->beginTransaction();
+        $ownsTransaction = !$this->pdo->inTransaction();
+
+        if ($ownsTransaction) {
+            $this->pdo->beginTransaction();
+        }
 
         try {
             $invite->accept();
@@ -69,7 +73,9 @@ final class InviteService
             $this->groupDao->update($group);
             $this->inviteDao->update($invite);
 
-            $this->pdo->commit();
+            if ($ownsTransaction) {
+                $this->pdo->commit();
+            }
         } catch (Throwable $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
