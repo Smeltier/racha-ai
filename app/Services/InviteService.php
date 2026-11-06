@@ -43,28 +43,28 @@ final class InviteService
         return $invite;
     }
 
-    public function delete(int $id) : void
+    public function delete(int $inviteId) : void
     {
-        $this->inviteDao->delete($id);
+        $this->inviteDao->delete($inviteId);
     }
 
-    public function accept(int $id) : void
+    public function accept(int $inviteId) : void
     {
-        $invite = $this->getInvite($id);
+        $invite = $this->getInvite($inviteId);
         $invite->accept();
         $this->inviteDao->update($invite);
     }
 
-    public function decline(int $id) : void
+    public function decline(int $inviteId) : void
     {
-        $invite = $this->getInvite($id);
+        $invite = $this->getInvite($inviteId);
         $invite->decline();
         $this->inviteDao->update($invite);
     }
 
-    public function findById(int $id) : Invite
+    public function findById(int $inviteId) : Invite
     {
-        return $this->getInvite($id);
+        return $this->getInvite($inviteId);
     }
 
     public function findByInvitedUserId(int $invitedUserId) : array
@@ -82,9 +82,9 @@ final class InviteService
         return $this->inviteDao->findByGroupId($groupId);
     }
 
-    private function getInvite(int $id) : Invite
+    private function getInvite(int $inviteId) : Invite
     {
-        $invite = $this->inviteDao->findById($id);
+        $invite = $this->inviteDao->findById($inviteId);
 
         if ($invite === null) {
             throw new LogicException('Invite not found');
