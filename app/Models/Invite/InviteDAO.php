@@ -177,6 +177,28 @@ final class InviteDAO
         return $invites;
     }
 
+    public function findPendingByUserIdAndGroupId(int $invitedUserId, int $groupId) : ?Invite
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT *
+            FROM invites
+            WHERE invited_user_id = :invited_user_id
+            AND group_id = :group_id
+            AND status = :status
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            ':invited_user_id' => $invitedUserId,
+            ':group_id' => $groupId,
+            ':status' => InviteStatus::Pending->value,
+        ]);
+
+        $tuple = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $tuple ? $this->mapTuple($tuple) : null;
+    }
+
     private function mapTuple(array $tuple) : Invite
     {
         return Invite::reconstitute(
