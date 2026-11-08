@@ -13,16 +13,15 @@ final class InviteTest extends TestCase
 {
     public function testCreateStartAsPending() : void
     {
-        $invite = Invite::create(1, 1, new DateTimeImmutable('+1 year'));
+        $invite = Invite::create(1, 1);
         $this->assertTrue($invite->isPending());
     }
 
     public function testCreateSetsTheCreationTime() : void
     {
         $before = new DateTimeImmutable();
-        $invite = Invite::create(1, 1, new DateTimeImmutable('+1 year'));
+        $invite = Invite::create(1, 1);
         $after = new DateTimeImmutable();
-
 
         $this->assertGreaterThanOrEqual($before, $invite->getCreatedAt());
         $this->assertLessThanOrEqual($after, $invite->getCreatedAt());
@@ -70,7 +69,7 @@ final class InviteTest extends TestCase
 
     public function testAcceptChangesPendingInviteToAccepted(): void
     {
-        $invite = Invite::create(2, 10, new DateTimeImmutable('+1 week'));
+        $invite = Invite::create(2, 10);
 
         $invite->accept();
 
@@ -81,7 +80,7 @@ final class InviteTest extends TestCase
 
     public function testDeclineChangesPendingInviteToDeclined(): void
     {
-        $invite = Invite::create(2, 10, new DateTimeImmutable('+1 week'));
+        $invite = Invite::create(2, 10);
 
         $invite->decline();
 
@@ -92,7 +91,7 @@ final class InviteTest extends TestCase
 
     public function testExpireChangesPendingInviteToExpired(): void
     {
-        $invite = Invite::create(2, 10, new DateTimeImmutable('+1 week'));
+        $invite = Invite::create(2, 10);
 
         $invite->expire();
 
@@ -103,7 +102,7 @@ final class InviteTest extends TestCase
 
     public function testIsExpiredAtReturnsTrueWhenInviteIsExpired(): void
     {
-        $invite = Invite::create(2, 10, new DateTimeImmutable('+1 week'));
+        $invite = Invite::create(2, 10);
         $this->assertTrue($invite->isExpiredAt(new DateTimeImmutable('+2 weeks')));
     }
 
