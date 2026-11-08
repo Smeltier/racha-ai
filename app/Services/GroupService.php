@@ -126,6 +126,18 @@ final class GroupService
         return $group;
     }
 
+    public function leave(int $id, int $userId) : void
+    {
+        $group = $this->getGroup($id);
+
+        if (!$group->hasMember($userId)) {
+            throw new GroupNotFoundException('Group not found');
+        }
+
+        $group->leave($userId);
+        $this->dao->update($group);
+    }
+
     public function promoteMemberRole(int $id, int $adminId, int $memberId) : Group
     {
         $group = $this->getGroupForAdmin($id, $adminId);

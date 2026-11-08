@@ -98,6 +98,36 @@ final class GroupController extends BaseController
         $this->redirect('/groups');
     }
 
+    public function leave(int $id) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $this->groupService->leave($id, $userId);
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        } catch (ValidationException $e) {
+            try {
+                $groupView = $this->groupService->findByIdViewForUser($id, $userId);
+            } catch (GroupNotFoundException) {
+                http_response_code(404);
+                echo 'Group not found';
+                return;
+            }
+
+            $this->render('groups/show', [
+                'groupView' => $groupView,
+                'userId' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        $this->redirect('/groups');
+    }
+
     public function removeMember(int $groupId, int $memberId) : void
     {
         $this->updateMemberRole($groupId, $memberId, 'remove');

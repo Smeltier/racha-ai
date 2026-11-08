@@ -79,6 +79,23 @@ final class Group
         unset($this->members[$userId]);
     }
 
+    public function leave(int $userId) : void
+    {
+        $this->assertNotDeleted();
+        $member = $this->requireMember($userId);
+
+        if ($member->isAdmin() && $this->adminCount() === 1 && $this->memberCount() > 1) {
+            throw new ValidationException('The last admin cannot leave the group.');
+        }
+
+        unset($this->members[$userId]);
+
+        if ($this->memberCount() === 0) {
+            $this->delete();
+            return;
+        }
+    }
+
     public function promote(int $userId) : void
     {
         $this->assertNotDeleted();

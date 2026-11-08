@@ -258,6 +258,35 @@ final class GroupTest extends TestCase
         $this->assertSame(2, $group->memberCount());
     }
 
+    public function testLeaveRemovesRegularMember(): void
+    {
+        $group = $this->groupWithMember();
+
+        $group->leave(self::MEMBER_ID);
+
+        $this->assertFalse($group->hasMember(self::MEMBER_ID));
+        $this->assertSame(1, $group->memberCount());
+    }
+
+    public function testLeaveDeletesGroupWhenLastMemberLeaves(): void
+    {
+        $group = $this->newGroup();
+
+        $group->leave(self::CREATOR_ID);
+
+        $this->assertTrue($group->isDeleted());
+        $this->assertSame(0, $group->memberCount());
+    }
+
+    public function testLeaveThrowsWhenLastAdminLeavesBeforeOtherMembers(): void
+    {
+        $group = $this->groupWithMember();
+
+        $this->expectException(ValidationException::class);
+
+        $group->leave(self::CREATOR_ID);
+    }
+
     public function testRemoveMemberAllowsRemovingAnAdminWhenAnotherAdminExists(): void
     {
         $group = $this->groupWithMember();
