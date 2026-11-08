@@ -5,6 +5,8 @@ namespace App\Services;
 use LogicException;
 use Throwable;
 use PDO;
+use App\Exceptions\ValidationException;
+use App\Models\User\Email;
 use App\Models\Invite\Invite;
 use App\Models\Invite\InviteDAO;
 use App\Models\Invite\InviteStatus;
@@ -76,6 +78,21 @@ final class InviteService
 
             throw $e;
         }
+    }
+
+    public function createForEmail(int $inviterUserId, string $email, int $groupId) : Invite
+    {
+        try {
+            $user = $this->userDao->findByEmail(Email::from($email));
+        } catch (ValidationException $e) {
+            throw new LogicException('Invalid email address', 0, $e);
+        }
+
+        if ($user === null || $user->getId === null) {
+            throw new LogicException('User not found');
+        }
+
+        return $this->create($inviterUserId, $user->getId(), $groupId);
     }
 
     public function cancel(int $inviteId, int $userId) : void
