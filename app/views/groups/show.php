@@ -3,7 +3,6 @@
 /** @var int $userId */
 /** @var \App\Models\Group\Group $group */
 
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 $title = 'Racha Aí (' . $group->getName() . ')';
 $showNavbar = true;
 
@@ -13,13 +12,13 @@ require __DIR__ . '/../partials/header.php';
 
 <main class="container">
     <section class="card">
-        <a href="<?= e($base . '/groups') ?>">← Voltar para grupos</a>
+        <a href="<?= e(app_url('/groups')) ?>">← Voltar para grupos</a>
         <h1><?= e($group->getName()) ?></h1>
         <p class="muted">
             Criado em <?= e($group->getCreatedAt()->format('d/m/Y H:i')) ?>
         </p>
         <?php if ($group->isAdmin($userId)): ?>
-            <a class="btn btn--sm" href="<?= e($base . '/groups/' . $group->getId() . '/invites') ?>">
+            <a class="btn btn--sm group-actions__invite" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
                 Gerenciar convites
             </a>
         <?php endif; ?>

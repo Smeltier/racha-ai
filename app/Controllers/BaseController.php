@@ -29,8 +29,7 @@ abstract class BaseController
 
     protected function redirect(string $path): never
     {
-        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-        header('Location: ' . $base . $path);
+        header('Location: ' . app_url($path));
         exit;
     }
 
