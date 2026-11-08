@@ -88,7 +88,7 @@ final class InviteService
             throw new LogicException('Invalid email address', 0, $e);
         }
 
-        if ($user === null || $user->getId === null) {
+        if ($user === null || $user->getId() === null) {
             throw new LogicException('User not found');
         }
 
