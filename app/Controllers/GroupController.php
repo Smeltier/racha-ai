@@ -131,7 +131,7 @@ final class GroupController extends BaseController
         $userId = $this->requireLogin();
 
         try {
-            $group = $this->groupService->findByIdForUser($id, $userId);
+            $groupView = $this->groupService->findByIdViewForUser($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
             echo 'Group not found';
@@ -139,7 +139,7 @@ final class GroupController extends BaseController
         }
 
         $this->render('groups/show', [
-            'group' => $group,
+            'groupView' => $groupView,
             'userId' => $userId,
         ]);
     }
@@ -160,7 +160,7 @@ final class GroupController extends BaseController
             return;
         } catch (ValidationException $e) {
             try {
-                $group = $this->groupService->findByIdForUser($groupId, $adminId);
+                $groupView = $this->groupService->findByIdViewForUser($groupId, $adminId);
             } catch (GroupNotFoundException) {
                 http_response_code(404);
                 echo 'Group not found';
@@ -168,7 +168,7 @@ final class GroupController extends BaseController
             }
 
             $this->render('groups/show', [
-                'group' => $group,
+                'groupView' => $groupView,
                 'userId' => $adminId,
                 'error' => $e->getMessage(),
             ]);

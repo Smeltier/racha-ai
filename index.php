@@ -43,7 +43,8 @@ $userService = new UserService(
 );
 
 $groupService = new GroupService(
-    new GroupDAO($pdo)
+    new GroupDAO($pdo),
+    new UserDAO($pdo)
 );
 
 $inviteService = new InviteService(

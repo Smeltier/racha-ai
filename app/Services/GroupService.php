@@ -5,12 +5,14 @@ namespace App\Services;
 use LogicException;
 use App\Models\Group\Group;
 use App\Models\Group\GroupDAO;
+use App\Models\User\UserDAO;
 use App\Exceptions\GroupNotFoundException;
 
 final class GroupService
 {
     public function __construct(
-        private GroupDAO $dao
+        private GroupDAO $dao,
+        private UserDAO $userDao
     ) {}
 
     public function create(int $userId, string $name) : Group
@@ -67,6 +69,24 @@ final class GroupService
         }
 
         return $group;
+    }
+
+    public function findByIdViewForUser(int $id, int $userId) : GroupView
+    {
+        $group = $this->findByIdForUser($id, $userId);
+        $members = [];
+
+        foreach ($group->getMembers() as $member) {
+            $user = $this->userDao->findById($member->userId);
+
+            if ($user === null) {
+                throw new GroupNotFoundException('Group not found');
+            }
+
+            $members[] = new GroupMemberView($member, $user->getName());
+        }
+
+        return new GroupView($group, $members);
     }
 
     public function findByUserId(int $userId) : array
