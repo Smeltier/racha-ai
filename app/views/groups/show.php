@@ -23,7 +23,7 @@ require __DIR__ . '/../partials/header.php';
         <?php endif; ?>
         <?php if ($group->isAdmin($userId)): ?>
             <div class="group-actions">
-                <a class="btn btn--sm group-actions__invite" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
+                <a class="btn btn--sm" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
                     Gerenciar convites
                 </a>
                 <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">

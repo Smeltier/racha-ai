@@ -165,6 +165,9 @@ a:hover {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 56px;
   padding: 0 24px;
   border: none;
@@ -176,10 +179,12 @@ a:hover {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
+  text-decoration: none;
 }
 
 .btn:hover {
   background: var(--primary-hover);
+  text-decoration: none;
 }
 
 .btn--block {
@@ -340,12 +345,6 @@ a:hover {
 .invite-list-item .row {
   flex-shrink: 0;
   justify-content: flex-end;
-}
-
-.group-actions__invite {
-  display: inline-flex;
-  align-items: center;
-  margin-top: var(--space-2);
 }
 
 .list-item__main {
