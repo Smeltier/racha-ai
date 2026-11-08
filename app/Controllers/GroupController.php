@@ -63,7 +63,10 @@ final class GroupController
             return;
         }
 
-        $this->render('groups/show', ['group' => $group]);
+        $this->render('groups/show', [
+            'group' => $group,
+            'userId' => $userId,
+        ]);
     }
 
     private function redirect(string $path): never

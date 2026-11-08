@@ -2,6 +2,7 @@
 
 use App\Controllers\UserController;
 use App\Controllers\GroupController;
+use App\Controllers\InviteController;
 
 return [
     ['GET', '/', UserController::class, 'showLogin'],
@@ -18,4 +19,10 @@ return [
     ['GET', '/groups/create', GroupController::class, 'showCreate'],
     ['GET', '/groups/{id}', GroupController::class, 'show'],
     ['POST', '/groups', GroupController::class, 'create'],
+    ['GET', '/invites', InviteController::class, 'showInvites'],
+    ['GET', '/groups/{groupId}/invites', InviteController::class, 'showGroupInvites'],
+    ['POST', '/groups/{groupId}/invites', InviteController::class, 'invite'],
+    ['POST', '/invites/{inviteId}/accept', InviteController::class, 'accept'],
+    ['POST', '/invites/{inviteId}/decline', InviteController::class, 'decline'],
+    ['POST', '/invites/{inviteId}/cancel', InviteController::class, 'cancel'],
 ];

@@ -22,6 +22,7 @@ $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
         <nav class="navbar__links">
             <a href="<?= e($base . '/groups/') ?>">Grupos</a>
             <a href="<?= e($base . '/profile') ?>">Perfil</a>
+            <a href="<?= e($base . '/invites') ?>">Convites</a>
         </nav>
         <form method="post" action="<?= e($base . '/logout') ?>">
             <?= csrf_field() ?>
