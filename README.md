@@ -13,6 +13,7 @@ Shared expenses usually end up in a messy spreadsheet or a chat full of "who pai
 * Every group keeps its own history of expenses.
 * Each expense records who paid, who takes part in the split, and how much each participant owes.
 * Balances are calculated from the recorded data, so nobody has to do the math by hand.
+
 ## Planned features (MVP)
  
 * Account registration and login with sessions
@@ -31,6 +32,10 @@ Not in the first version: recording payments between members (settling up). It c
 * HTML, CSS and JavaScript
 * Composer with PSR 4 autoloading
 * PHPUnit for automated tests
+
+## Documentation
+
+- [Architecture conventions](docs/architecture.md)
 
 ## Local development
 
