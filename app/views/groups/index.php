@@ -3,7 +3,6 @@
 /** @var \App\Models\Group\Group[] $groups */
 
 $groups = $groups ?? [];
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 $title = 'Racha Aí (Grupos)';
 $showNavbar = true;
@@ -19,7 +18,7 @@ require __DIR__ . '/../partials/header.php';
             <p class="muted">Organize as despesas compartilhadas em um só lugar.</p>
         </div>
 
-        <button class="btn btn--sm" type="button" onclick="window.location.href='<?= e($base . '/groups/create') ?>'">Criar grupo</button>
+        <button class="btn btn--sm" type="button" onclick="window.location.href='<?= e(app_url('/groups/create')) ?>'">Criar grupo</button>
     </section>
 
     <section class="card">
@@ -32,7 +31,7 @@ require __DIR__ . '/../partials/header.php';
                 <div class="list-item">
                     <div>
                         <div class="list-item__title">
-                            <a href="<?= e($base . '/groups/' . $group->getId()) ?>">
+                            <a href="<?= e(app_url('/groups/' . $group->getId())) ?>">
                                 <?= e($group->getName()) ?>
                             </a>
                         </div>

@@ -20,7 +20,7 @@ final class Router
     public function dispatch(string $method, string $uri) : void
     {
         $requestPath = parse_url($uri, PHP_URL_PATH) ?: '/';
-        $path = '/' . trim(substr($requestPath,  strlen($this->base)), '/');
+        $path = '/' . trim(substr($requestPath, strlen($this->base)), '/');
 
         foreach ($this->routes as [$routeMethod, $pattern, $class, $action]) {
             if ($routeMethod !== $method) {

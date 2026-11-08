@@ -63,7 +63,7 @@ $router = new Router(
     $routes,
     $factories,
     new Csrf(),
-    rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\')
+    app_base_path()
 );
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

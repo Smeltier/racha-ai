@@ -5,7 +5,6 @@
 
 $invites = $invites ?? [];
 $error = $error ?? null;
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 $title = 'Racha Aí (Convites do grupo)';
 $showNavbar = true;
@@ -25,7 +24,7 @@ require __DIR__ . '/../partials/header.php';
 
         <form class="form"
               method="post"
-              action="<?= e($base . '/groups/' . $groupId . '/invites') ?>">
+              action="<?= e(app_url('/groups/' . $groupId . '/invites')) ?>">
             <?= csrf_field() ?>
 
             <div class="form__group">
@@ -55,7 +54,7 @@ require __DIR__ . '/../partials/header.php';
         <?php else: ?>
             <?php foreach ($invites as $inviteView): ?>
                 <?php $invite = $inviteView->invite; ?>
-                <div class="list-item">
+                <div class="list-item invite-list-item">
                     <div>
                         <div class="list-item__title">
                             <?= e($inviteView->userName) ?>
@@ -76,7 +75,7 @@ require __DIR__ . '/../partials/header.php';
 
                     <?php if ($invite->isPending()): ?>
                         <form method="post"
-                              action="<?= e($base . '/invites/' . $invite->getId() . '/cancel') ?>">
+                              action="<?= e(app_url('/invites/' . $invite->getId() . '/cancel')) ?>">
                             <?= csrf_field() ?>
                             <button class="btn btn--sm btn--danger" type="submit">
                                 Cancelar

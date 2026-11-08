@@ -3,7 +3,6 @@
 $title = $title ?? 'Racha Aí';
 $bodyClass = $bodyClass ?? 'page';
 $showNavbar = $showNavbar ?? false;
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 ?>
 <!DOCTYPE html>
@@ -13,18 +12,18 @@ $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="<?= e($base . '/public/style.css') ?>">
+    <link rel="stylesheet" href="<?= e(app_url('/public/style.css')) ?>">
 </head>
 <body class="<?= e($bodyClass) ?>">
 <?php if ($showNavbar): ?>
     <header class="navbar">
         <span class="navbar__brand">Racha Aí</span>
         <nav class="navbar__links">
-            <a href="<?= e($base . '/groups/') ?>">Grupos</a>
-            <a href="<?= e($base . '/profile') ?>">Perfil</a>
-            <a href="<?= e($base . '/invites') ?>">Convites</a>
+            <a href="<?= e(app_url('/groups')) ?>">Grupos</a>
+            <a href="<?= e(app_url('/profile')) ?>">Perfil</a>
+            <a href="<?= e(app_url('/invites')) ?>">Convites</a>
         </nav>
-        <form method="post" action="<?= e($base . '/logout') ?>">
+        <form method="post" action="<?= e(app_url('/logout')) ?>">
             <?= csrf_field() ?>
             <button class="btn btn--sm btn--ghost" type="submit">Sair</button>
         </form>

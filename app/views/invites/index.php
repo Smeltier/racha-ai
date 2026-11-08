@@ -4,7 +4,6 @@
 
 $invites = $invites ?? [];
 $error = $error ?? null;
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 $title = 'Racha Aí (Convites)';
 $showNavbar = true;
@@ -29,7 +28,7 @@ require __DIR__ . '/../partials/header.php';
         <?php else: ?>
             <?php foreach ($invites as $inviteView): ?>
                 <?php $invite = $inviteView->invite; ?>
-                <div class="list-item">
+                <div class="list-item invite-list-item">
                     <div>
                         <div class="list-item__title">
                             <?= e($inviteView->groupName) ?>
@@ -48,7 +47,7 @@ require __DIR__ . '/../partials/header.php';
                     <?php if ($invite->isPending()): ?>
                         <div class="row">
                             <form method="post"
-                                  action="<?= e($base . '/invites/' . $invite->getId() . '/accept') ?>">
+                                  action="<?= e(app_url('/invites/' . $invite->getId() . '/accept')) ?>">
                                 <?= csrf_field() ?>
                                 <button class="btn btn--sm" type="submit">
                                     Aceitar
@@ -56,7 +55,7 @@ require __DIR__ . '/../partials/header.php';
                             </form>
 
                             <form method="post"
-                                  action="<?= e($base . '/invites/' . $invite->getId() . '/decline') ?>">
+                                  action="<?= e(app_url('/invites/' . $invite->getId() . '/decline')) ?>">
                                 <?= csrf_field() ?>
                                 <button class="btn btn--sm btn--ghost" type="submit">
                                     Recusar
