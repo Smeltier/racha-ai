@@ -197,6 +197,18 @@ final class InviteDAO
         return $tuple ? $this->mapTuple($tuple) : null;
     }
 
+    public function expirePending(): void
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE invites
+            SET status = 'expired'
+            WHERE status = 'pending'
+            AND expires_at <= CURRENT_TIMESTAMP
+        ");
+
+        $stmt->execute();
+    }
+
     private function mapTuple(array $tuple) : Invite
     {
         return Invite::reconstitute(
