@@ -1,5 +1,6 @@
 <?php
 
+/** @var int $userId */
 /** @var \App\Models\Group\Group $group */
 
 $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
@@ -17,6 +18,11 @@ require __DIR__ . '/../partials/header.php';
         <p class="muted">
             Criado em <?= e($group->getCreatedAt()->format('d/m/Y H:i')) ?>
         </p>
+        <?php if ($group->isAdmin($userId)): ?>
+        <a class="btn btn--sm" href="<?= e($base . '/groups/' . $group->getId() . '/invites') ?>">
+            Gerenciar convites
+        </a>
+<?php endif; ?>
     </section>
 
     <section class="card">
