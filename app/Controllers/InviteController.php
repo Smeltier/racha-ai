@@ -10,7 +10,7 @@ final class InviteController extends BaseController
 {
     public function __construct(
         private InviteService $inviteService,
-        private Session $session
+        Session $session
     ) {
         parent::__construct($session);
     }
