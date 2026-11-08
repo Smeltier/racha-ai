@@ -225,6 +225,7 @@ a:hover {
 
 .group-actions {
   margin-top: var(--space-2);
+  justify-content: flex-start;
 }
 
 .member-actions form {

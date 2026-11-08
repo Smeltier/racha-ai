@@ -36,6 +36,13 @@ require __DIR__ . '/../partials/header.php';
                 <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId())) ?>">Cancelar</a>
             </div>
         </form>
+
+        <form method="post"
+              action="<?= e(app_url('/groups/' . $group->getId() . '/delete')) ?>"
+              onsubmit="return confirm('Excluir este grupo?')">
+            <?= csrf_field() ?>
+            <button class="btn btn--sm btn--danger" type="submit">Excluir grupo</button>
+        </form>
     </section>
 </main>
 

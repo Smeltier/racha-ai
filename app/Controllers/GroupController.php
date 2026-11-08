@@ -83,6 +83,21 @@ final class GroupController extends BaseController
         $this->redirect('/groups/' . $id);
     }
 
+    public function delete(int $id) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $this->groupService->deleteForAdmin($id, $userId);
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        }
+
+        $this->redirect('/groups');
+    }
+
     public function removeMember(int $groupId, int $memberId) : void
     {
         $this->updateMemberRole($groupId, $memberId, 'remove');
@@ -116,7 +131,7 @@ final class GroupController extends BaseController
         $userId = $this->requireLogin();
 
         try {
-            $group = $this->groupService->findByIdForUser($id, $userId);
+            $groupView = $this->groupService->findByIdViewForUser($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
             echo 'Group not found';
@@ -124,7 +139,7 @@ final class GroupController extends BaseController
         }
 
         $this->render('groups/show', [
-            'group' => $group,
+            'groupView' => $groupView,
             'userId' => $userId,
         ]);
     }
@@ -145,7 +160,7 @@ final class GroupController extends BaseController
             return;
         } catch (ValidationException $e) {
             try {
-                $group = $this->groupService->findByIdForUser($groupId, $adminId);
+                $groupView = $this->groupService->findByIdViewForUser($groupId, $adminId);
             } catch (GroupNotFoundException) {
                 http_response_code(404);
                 echo 'Group not found';
@@ -153,7 +168,7 @@ final class GroupController extends BaseController
             }
 
             $this->render('groups/show', [
-                'group' => $group,
+                'groupView' => $groupView,
                 'userId' => $adminId,
                 'error' => $e->getMessage(),
             ]);

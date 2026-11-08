@@ -1,8 +1,9 @@
 <?php
 
 /** @var int $userId */
-/** @var \App\Models\Group\Group $group */
+/** @var \App\Services\GroupView $groupView */
 
+$group = $groupView->group;
 $title = 'Racha Aí (' . $group->getName() . ')';
 $showNavbar = true;
 $error = $error ?? null;
@@ -36,10 +37,11 @@ require __DIR__ . '/../partials/header.php';
     <section class="card">
         <h2>Membros (<?= $group->memberCount() ?>)</h2>
 
-        <?php foreach ($group->getMembers() as $member): ?>
+        <?php foreach ($groupView->members as $memberView): ?>
+            <?php $member = $memberView->member; ?>
             <div class="list-item">
                 <div>
-                    <div class="list-item__title">Usuário: <?= e((string) $member->userId) ?></div>
+                    <div class="list-item__title"><?= e($memberView->userName) ?></div>
                     <div class="muted">
                         Desde <?= e($member->joinedAt->format('d/m/Y')) ?>
                     </div>

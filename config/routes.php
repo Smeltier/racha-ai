@@ -21,6 +21,7 @@ return [
     ['GET', '/groups/{id}/edit', GroupController::class, 'showEdit'],
     ['POST', '/groups', GroupController::class, 'create'],
     ['POST', '/groups/{id}', GroupController::class, 'update'],
+    ['POST', '/groups/{id}/delete', GroupController::class, 'delete'],
     ['POST', '/groups/{groupId}/members/{memberId}/remove', GroupController::class, 'removeMember'],
     ['POST', '/groups/{groupId}/members/{memberId}/promote', GroupController::class, 'promoteMember'],
     ['POST', '/groups/{groupId}/members/{memberId}/demote', GroupController::class, 'demoteMember'],
