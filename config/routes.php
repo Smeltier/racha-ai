@@ -22,7 +22,7 @@ return [
     ['GET', '/invites', InviteController::class, 'showInvites'],
     ['GET', '/groups/{groupId}/invites', InviteController::class, 'showGroupInvites'],
     ['POST', '/groups/{groupId}/invites', InviteController::class, 'invite'],
-    ['POST', '/invites/{id}/accept', InviteController::class, 'accept'],
-    ['POST', '/invites/{id}/decline', InviteController::class, 'decline'],
-    ['POST', '/invites/{id}/cancel', InviteController::class, 'cancel'],
+    ['POST', '/invites/{inviteId}/accept', InviteController::class, 'accept'],
+    ['POST', '/invites/{inviteId}/decline', InviteController::class, 'decline'],
+    ['POST', '/invites/{inviteId}/cancel', InviteController::class, 'cancel'],
 ];
