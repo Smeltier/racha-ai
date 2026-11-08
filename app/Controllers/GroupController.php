@@ -83,6 +83,21 @@ final class GroupController extends BaseController
         $this->redirect('/groups/' . $id);
     }
 
+    public function delete(int $id) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $this->groupService->deleteForAdmin($id, $userId);
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        }
+
+        $this->redirect('/groups');
+    }
+
     public function removeMember(int $groupId, int $memberId) : void
     {
         $this->updateMemberRole($groupId, $memberId, 'remove');

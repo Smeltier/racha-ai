@@ -28,6 +28,13 @@ final class GroupService
         $this->dao->update($group);
     }
 
+    public function deleteForAdmin(int $id, int $adminId) : void
+    {
+        $group = $this->getGroupForAdmin($id, $adminId);
+        $group->delete();
+        $this->dao->update($group);
+    }
+
     public function changeName(int $id, string $name) : Group
     {
         $group = $this->getGroup($id);
