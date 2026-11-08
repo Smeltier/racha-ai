@@ -46,6 +46,8 @@ final class InviteService
             throw new LogicException('User is already a member of the group');
         }
 
+        $this->inviteDao->expirePending();
+
         $ownsTransaction = !$this->pdo->inTransaction();
 
         if ($ownsTransaction) {
@@ -171,16 +173,20 @@ final class InviteService
 
     public function findAllForUser(int $userId) : array
     {
+        $this->inviteDao->expirePending();
         return $this->inviteDao->findByInvitedUserId($userId);
     }
 
     public function findAllForUserByStatus(int $userId, InviteStatus $status) : array
     {
+        $this->inviteDao->expirePending();
         return $this->inviteDao->findByInvitedUserIdAndInviteStatus($userId, $status);
     }
 
     public function findByGroupId(int $groupId, int $userId) : array
     {
+        $this->inviteDao->expirePending();
+
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null || !$group->isAdmin($userId)) {
@@ -192,6 +198,8 @@ final class InviteService
 
     private function getInvite(int $inviteId) : Invite
     {
+        $this->inviteDao->expirePending();
+
         $invite = $this->inviteDao->findById($inviteId);
 
         if ($invite === null) {
