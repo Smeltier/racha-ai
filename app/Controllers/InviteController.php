@@ -20,7 +20,7 @@ final class InviteController extends BaseController
         $userId = $this->requireLogin();
 
         $this->render('invites/index', [
-            'invites' => $this->inviteService->findAllForUser($userId),
+            'invites' => $this->inviteService->findAllForUserView($userId),
         ]);
     }
 
@@ -92,7 +92,7 @@ final class InviteController extends BaseController
     private function renderGroupInvites(int $groupId, int $userId, ?string $error = null) : void
     {
         try {
-            $invites = $this->inviteService->findByGroupId($groupId, $userId);
+            $invites = $this->inviteService->findByGroupIdView($groupId, $userId);
         } catch (LogicException) {
             http_response_code(404);
             echo 'Group not found';
@@ -108,7 +108,7 @@ final class InviteController extends BaseController
 
     private function renderUserInvites(int $userId, ?string $error = null) : void
     {
-        $invites = $this->inviteService->findAllForUser($userId);
+        $invites = $this->inviteService->findAllForUserView($userId);
 
         $this->render('invites/index', [
             'invites' => $invites,

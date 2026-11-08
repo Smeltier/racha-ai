@@ -2,6 +2,7 @@
 
 namespace App\Models\Invite;
 
+use App\Services\InviteView;
 use DateTimeImmutable;
 use LogicException;
 use PDO;
@@ -128,6 +129,24 @@ final class InviteDAO
         return $invites;
     }
 
+    public function findViewByInvitedUserId(int $invitedUserId) : array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT i.*, g.name AS group_name, u.name AS user_name, u.email AS user_email
+            FROM invites i
+            INNER JOIN user_groups g ON g.id = i.group_id
+            INNER JOIN users u ON u.id = i.invited_user_id
+            WHERE i.invited_user_id = :invitedUserId
+        ");
+
+        $stmt->execute([':invitedUserId' => $invitedUserId]);
+
+        return array_map(
+            fn (array $tuple) => $this->mapViewTuple($tuple),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
     public function findByGroupId(int $groupId) : array
     {
         $stmt = $this->pdo->prepare("
@@ -150,6 +169,24 @@ final class InviteDAO
         }
 
         return $invites;
+    }
+
+    public function findViewByGroupId(int $groupId) : array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT i.*, g.name AS group_name, u.name AS user_name, u.email AS user_email
+            FROM invites i
+            INNER JOIN user_groups g ON g.id = i.group_id
+            INNER JOIN users u ON u.id = i.invited_user_id
+            WHERE i.group_id = :groupId
+        ");
+
+        $stmt->execute([':groupId' => $groupId]);
+
+        return array_map(
+            fn (array $tuple) => $this->mapViewTuple($tuple),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
     public function findByInvitedUserIdAndInviteStatus(int $invitedUserId, InviteStatus $status) : array
@@ -218,6 +255,16 @@ final class InviteDAO
             InviteStatus::from($tuple['status']),
             new DateTimeImmutable($tuple['created_at']),
             new DateTimeImmutable($tuple['expires_at'])
+        );
+    }
+
+    private function mapViewTuple(array $tuple) : InviteView
+    {
+        return new InviteView(
+            $this->mapTuple($tuple),
+            $tuple['group_name'],
+            $tuple['user_name'],
+            $tuple['user_email']
         );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-/** @var \App\Models\Invite\Invite[] $invites */
+/** @var \App\Services\InviteView[] $invites */
 /** @var int $groupId */
 
 $invites = $invites ?? [];
@@ -53,11 +53,15 @@ require __DIR__ . '/../partials/header.php';
         <?php if ($invites === []): ?>
             <p class="muted">Nenhum convite foi enviado para este grupo.</p>
         <?php else: ?>
-            <?php foreach ($invites as $invite): ?>
+            <?php foreach ($invites as $inviteView): ?>
+                <?php $invite = $inviteView->invite; ?>
                 <div class="list-item">
                     <div>
                         <div class="list-item__title">
-                            Usuário #<?= e((string) $invite->getInvitedUserId()) ?>
+                            <?= e($inviteView->userName) ?>
+                        </div>
+                        <div class="muted">
+                            <?= e($inviteView->userEmail) ?>
                         </div>
 
                         <div class="muted">

@@ -177,6 +177,12 @@ final class InviteService
         return $this->inviteDao->findByInvitedUserId($userId);
     }
 
+    public function findAllForUserView(int $userId) : array
+    {
+        $this->inviteDao->expirePending();
+        return $this->inviteDao->findViewByInvitedUserId($userId);
+    }
+
     public function findAllForUserByStatus(int $userId, InviteStatus $status) : array
     {
         $this->inviteDao->expirePending();
@@ -194,6 +200,19 @@ final class InviteService
         }
 
         return $this->inviteDao->findByGroupId($groupId);
+    }
+
+    public function findByGroupIdView(int $groupId, int $userId) : array
+    {
+        $this->inviteDao->expirePending();
+
+        $group = $this->groupDao->findById($groupId);
+
+        if ($group === null || !$group->isAdmin($userId)) {
+            throw new LogicException('Group not found');
+        }
+
+        return $this->inviteDao->findViewByGroupId($groupId);
     }
 
     private function getInvite(int $inviteId) : Invite
