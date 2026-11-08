@@ -19,17 +19,78 @@ final class InviteController extends BaseController
     {
         $userId = $this->requireLogin();
 
-        $invites = $this->inviteService->findAllForUser($userId);
-
         $this->render('invites/index', [
-            'invites' => $invites,
+            'invites' => $this->inviteService->findAllForUser($userId),
         ]);
     }
 
     public function showGroupInvites(int $groupId) : void
     {
         $userId = $this->requireLogin();
+        $this->renderGroupInvites($groupId, $userId);
+    }
 
+    public function invite(int $groupId) : void
+    {
+        $userId = $this->requireLogin();
+        $email = $this->input('email');
+
+        try {
+            $this->inviteService->createForEmail($userId, $email, $groupId);
+        } catch (LogicException $e) {
+            $this->renderGroupInvites($groupId, $userId, $e->getMessage());
+            return;
+        }
+
+        $this->redirect('/groups/' . $groupId . '/invites');
+    }
+
+    public function accept(int $inviteId) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $this->inviteService->accept($inviteId, $userId);
+        } catch (LogicException $e) {
+            $this->renderUserInvites($userId, $e->getMessage());
+            return;
+        }
+
+        $this->redirect('/invites');
+    }
+
+    public function decline(int $inviteId) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $this->inviteService->decline($inviteId, $userId);
+        } catch (LogicException $e) {
+            $this->renderUserInvites($userId, $e->getMessage());
+            return;
+        }
+
+        $this->redirect('/invites');
+    }
+
+    public function cancel(int $inviteId) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $invite = $this->inviteService->findForGroupAdmin($inviteId, $userId);
+            $this->inviteService->cancel($inviteId, $userId);
+        } catch (LogicException $e) {
+            http_response_code(404);
+            echo 'Invite not found';
+            return;
+        }
+
+        $this->redirect('/groups/' . $invite->getGroupId() . '/invites');
+    }
+
+    private function renderGroupInvites(int $groupId, int $userId, ?string $error = null) : void
+    {
         try {
             $invites = $this->inviteService->findByGroupId($groupId, $userId);
         } catch (LogicException) {
@@ -41,22 +102,17 @@ final class InviteController extends BaseController
         $this->render('invites/group', [
             'invites' => $invites,
             'groupId' => $groupId,
+            'error' => $error,
         ]);
     }
 
-    public function invite(int $groupId) : void
+    private function renderUserInvites(int $userId, ?string $error = null) : void
     {
-    }
+        $invites = $this->inviteService->findAllForUser($userId);
 
-    public function accept(int $inviteId) : void
-    {
-    }
-
-    public function decline(int $inviteId) : void
-    {
-    }
-
-    public function cancel(int $inviteId) : void
-    {
+        $this->render('invites/index', [
+            'invites' => $invites,
+            'error' => $error,
+        ]);
     }
 }
