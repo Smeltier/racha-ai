@@ -27,16 +27,16 @@ abstract class BaseController
         return is_string($value) ? $value : '';
     }
 
-    protected function redirect(string $path) : void
+    protected function redirect(string $path): never
     {
         $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
         header('Location: ' . $base . $path);
         exit;
     }
 
-    protected function render(string $view, array $data = []) : void
+    protected function render(string $view, array $data = []): void
     {
         extract($data);
-        require __DIR__ . "/../views/' . $view . '.php";
+        require __DIR__ . '/../views/' . $view . '.php';
     }
 }
