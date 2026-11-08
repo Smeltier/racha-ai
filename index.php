@@ -9,10 +9,13 @@ use App\Core\Connection;
 
 use App\Controllers\UserController;
 use App\Controllers\GroupController;
+use App\Controllers\InviteController;
 use App\Models\Group\GroupDAO;
 use App\Models\User\UserDAO;
+use App\Models\Invite\InviteDAO;
 use App\Services\GroupService;
 use App\Services\UserService;
+use App\Services\InviteService;
 
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -35,12 +38,25 @@ try {
     exit('Service unavailable');
 }
 
-$userService = new UserService(new UserDAO($pdo));
-$groupService = new GroupService(new GroupDAO($pdo));
+$userService = new UserService(
+    new UserDAO($pdo)
+);
+
+$groupService = new GroupService(
+    new GroupDAO($pdo)
+);
+
+$inviteService = new InviteService(
+    new InviteDAO($pdo),
+    new GroupDAO($pdo),
+    new UserDAO($pdo),
+    $pdo
+);
 
 $factories = [
     UserController::class => fn() => new UserController($userService, $session),
     GroupController::class => fn() => new GroupController($groupService, $session),
+    InviteController::class => fn() => new InviteController($inviteService, $session),
 ];
 
 $router = new Router(
