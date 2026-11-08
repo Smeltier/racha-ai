@@ -19,10 +19,10 @@ require __DIR__ . '/../partials/header.php';
             Criado em <?= e($group->getCreatedAt()->format('d/m/Y H:i')) ?>
         </p>
         <?php if ($group->isAdmin($userId)): ?>
-        <a class="btn btn--sm" href="<?= e($base . '/groups/' . $group->getId() . '/invites') ?>">
-            Gerenciar convites
-        </a>
-<?php endif; ?>
+            <a class="btn btn--sm" href="<?= e($base . '/groups/' . $group->getId() . '/invites') ?>">
+                Gerenciar convites
+            </a>
+        <?php endif; ?>
     </section>
 
     <section class="card">
