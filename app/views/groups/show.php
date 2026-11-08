@@ -5,6 +5,7 @@
 
 $title = 'Racha Aí (' . $group->getName() . ')';
 $showNavbar = true;
+$error = $error ?? null;
 
 require __DIR__ . '/../partials/header.php';
 
@@ -17,10 +18,18 @@ require __DIR__ . '/../partials/header.php';
         <p class="muted">
             Criado em <?= e($group->getCreatedAt()->format('d/m/Y H:i')) ?>
         </p>
+        <?php if ($error !== null): ?>
+            <div class="alert" role="alert"><?= e($error) ?></div>
+        <?php endif; ?>
         <?php if ($group->isAdmin($userId)): ?>
-            <a class="btn btn--sm group-actions__invite" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
-                Gerenciar convites
-            </a>
+            <div class="group-actions">
+                <a class="btn btn--sm" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
+                    Gerenciar convites
+                </a>
+                <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">
+                    Editar grupo
+                </a>
+            </div>
         <?php endif; ?>
     </section>
 
@@ -38,6 +47,25 @@ require __DIR__ . '/../partials/header.php';
                 <span class="badge">
                     <?= $member->isAdmin() ? 'Administrador' : 'Membro' ?>
                 </span>
+                <?php if ($group->isAdmin($userId) && $member->userId !== $userId): ?>
+                    <div class="member-actions">
+                        <?php if ($member->isAdmin()): ?>
+                            <form method="post" action="<?= e(app_url('/groups/' . $group->getId() . '/members/' . $member->userId . '/demote')) ?>">
+                                <?= csrf_field() ?>
+                                <button class="btn btn--sm btn--ghost" type="submit">Rebaixar</button>
+                            </form>
+                        <?php else: ?>
+                            <form method="post" action="<?= e(app_url('/groups/' . $group->getId() . '/members/' . $member->userId . '/promote')) ?>">
+                                <?= csrf_field() ?>
+                                <button class="btn btn--sm" type="submit">Promover</button>
+                            </form>
+                        <?php endif; ?>
+                        <form method="post" action="<?= e(app_url('/groups/' . $group->getId() . '/members/' . $member->userId . '/remove')) ?>">
+                            <?= csrf_field() ?>
+                            <button class="btn btn--sm btn--danger" type="submit">Remover</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </section>

@@ -165,6 +165,9 @@ a:hover {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 56px;
   padding: 0 24px;
   border: none;
@@ -176,10 +179,12 @@ a:hover {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
+  text-decoration: none;
 }
 
 .btn:hover {
   background: var(--primary-hover);
+  text-decoration: none;
 }
 
 .btn--block {
@@ -199,6 +204,31 @@ a:hover {
 
 .btn--ghost:hover {
   background: #E2E8F0;
+}
+
+.btn--danger {
+  background: var(--danger);
+}
+
+.btn--danger:hover {
+  background: #991B1B;
+}
+
+.group-actions,
+.member-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.group-actions {
+  margin-top: var(--space-2);
+}
+
+.member-actions form {
+  margin: 0;
 }
 
 .navbar {
@@ -317,12 +347,6 @@ a:hover {
   justify-content: flex-end;
 }
 
-.group-actions__invite {
-  display: inline-flex;
-  align-items: center;
-  margin-top: var(--space-2);
-}
-
 .list-item__main {
   display: flex;
   align-items: center;
@@ -387,6 +411,11 @@ a:hover {
   }
 
   .invite-list-item .row {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .member-actions {
     width: 100%;
     justify-content: flex-start;
   }

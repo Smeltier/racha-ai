@@ -2,17 +2,20 @@
 
 namespace App\Controllers;
 
+use LogicException;
 use App\Http\Session;
 use App\Services\GroupService;
 use App\Exceptions\ValidationException;
 use App\Exceptions\GroupNotFoundException;
 
-final class GroupController
+final class GroupController extends BaseController
 {
     public function __construct(
         private GroupService $groupService,
-        private Session $session
-    ) {}
+        Session $session
+    ) {
+        parent::__construct($session);
+    }
 
     public function create() : void
     {
@@ -36,6 +39,63 @@ final class GroupController
     {
         $this->requireLogin();
         $this->render('groups/create');
+    }
+
+    public function showEdit(int $id) : void
+    {
+        $userId = $this->requireLogin();
+
+        try {
+            $group = $this->groupService->findByIdForUser($id, $userId);
+            if (!$group->isAdmin($userId)) {
+                throw new GroupNotFoundException('Group not found');
+            }
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        }
+
+        $this->render('groups/edit', [
+            'group' => $group,
+        ]);
+    }
+
+    public function update(int $id) : void
+    {
+        $userId = $this->requireLogin();
+        $name = $this->input('name');
+
+        try {
+            $this->groupService->changeNameForAdmin($id, $userId, $name);
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        } catch (ValidationException $e) {
+            $this->renderEditError($id, $userId, $name, $e->getMessage());
+            return;
+        } catch (LogicException $e) {
+            $this->renderEditError($id, $userId, $name, $e->getMessage());
+            return;
+        }
+
+        $this->redirect('/groups/' . $id);
+    }
+
+    public function removeMember(int $groupId, int $memberId) : void
+    {
+        $this->updateMemberRole($groupId, $memberId, 'remove');
+    }
+
+    public function promoteMember(int $groupId, int $memberId) : void
+    {
+        $this->updateMemberRole($groupId, $memberId, 'promote');
+    }
+
+    public function demoteMember(int $groupId, int $memberId) : void
+    {
+        $this->updateMemberRole($groupId, $memberId, 'demote');
     }
 
     public function showGroups() : void
@@ -69,33 +129,58 @@ final class GroupController
         ]);
     }
 
-    private function redirect(string $path): never
+    private function updateMemberRole(int $groupId, int $memberId, string $action) : void
     {
-        header('Location: ' . app_url($path));
-        exit;
-    }
+        $adminId = $this->requireLogin();
 
-    private function render(string $view, array $data = []): void
-    {
-        extract($data);
-        require __DIR__ . '/../views/' . $view . '.php';
-    }
+        try {
+            match ($action) {
+                'remove' => $this->groupService->removeMember($groupId, $adminId, $memberId),
+                'promote' => $this->groupService->promoteMemberRole($groupId, $adminId, $memberId),
+                'demote' => $this->groupService->demoteMemberRole($groupId, $adminId, $memberId),
+            };
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        } catch (ValidationException $e) {
+            try {
+                $group = $this->groupService->findByIdForUser($groupId, $adminId);
+            } catch (GroupNotFoundException) {
+                http_response_code(404);
+                echo 'Group not found';
+                return;
+            }
 
-    private function input(string $key): string
-    {
-        $value = $_POST[$key] ?? '';
-
-        return is_string($value) ? $value : '';
-    }
-
-    private function requireLogin() : int
-    {
-        $userId = $this->session->userId();
-
-        if ($userId === null) {
-            $this->redirect('/login');
+            $this->render('groups/show', [
+                'group' => $group,
+                'userId' => $adminId,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        } catch (LogicException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
         }
 
-        return $userId;
+        $this->redirect('/groups/' . $groupId);
+    }
+
+    private function renderEditError(int $id, int $userId, string $name, string $error) : void
+    {
+        try {
+            $group = $this->groupService->findByIdForUser($id, $userId);
+        } catch (GroupNotFoundException) {
+            http_response_code(404);
+            echo 'Group not found';
+            return;
+        }
+
+        $this->render('groups/edit', [
+            'group' => $group,
+            'error' => $error,
+            'name' => $name,
+        ]);
     }
 }

@@ -37,6 +37,15 @@ final class GroupService
         return $group;
     }
 
+    public function changeNameForAdmin(int $id, int $adminId, string $name) : Group
+    {
+        $group = $this->getGroupForAdmin($id, $adminId);
+        $group->rename($name);
+        $this->dao->update($group);
+
+        return $group;
+    }
+
     public function findById(int $id) : Group
     {
         return $this->getGroup($id);
@@ -80,35 +89,40 @@ final class GroupService
         return $group;
     }
 
-    public function removeMembers(int $id, array $members) : Group
+    public function removeMember(int $id, int $adminId, int $memberId) : Group
     {
-        if (empty($members)) {
-            throw new LogicException('Members list cannot be empty');
-        }
-
-        $group = $this->getGroup($id);
-        foreach ($members as $member) {
-            $group->removeMember($member);
-        }
+        $group = $this->getGroupForAdmin($id, $adminId);
+        $group->removeMember($memberId);
 
         $this->dao->update($group);
 
         return $group;
     }
 
-    public function promoteMemberRole(int $id, int $userId) : Group
+    public function promoteMemberRole(int $id, int $adminId, int $memberId) : Group
     {
-        $group = $this->getGroup($id);
-        $group->promote($userId);
+        $group = $this->getGroupForAdmin($id, $adminId);
+        $group->promote($memberId);
         $this->dao->update($group);
         return $group;
     }
 
-    public function demoteMemberRole(int $id, int $userId) : Group
+    public function demoteMemberRole(int $id, int $adminId, int $memberId) : Group
+    {
+        $group = $this->getGroupForAdmin($id, $adminId);
+        $group->demote($memberId);
+        $this->dao->update($group);
+        return $group;
+    }
+
+    private function getGroupForAdmin(int $id, int $adminId) : Group
     {
         $group = $this->getGroup($id);
-        $group->demote($userId);
-        $this->dao->update($group);
+
+        if (!$group->isAdmin($adminId)) {
+            throw new GroupNotFoundException('Group not found');
+        }
+
         return $group;
     }
 
