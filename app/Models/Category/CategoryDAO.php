@@ -2,6 +2,7 @@
 
 namespace App\Models\Category;
 
+use LogicException;
 use PDO;
 use PDOException;
 
