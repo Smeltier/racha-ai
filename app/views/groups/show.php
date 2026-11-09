@@ -30,14 +30,11 @@ require __DIR__ . '/../partials/header.php';
                 <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">
                     Editar grupo
                 </a>
+                <a class="btn btn--sm btn--danger" href="<?= e(app_url('/groups/' . $group->getId() . '/leave')) ?>">
+                    Sair do grupo
+                </a>
             </div>
         <?php endif; ?>
-        <form method="post"
-              action="<?= e(app_url('/groups/' . $group->getId() . '/leave')) ?>"
-              onsubmit="return confirm('Sair deste grupo?')">
-            <?= csrf_field() ?>
-            <button class="btn btn--sm btn--danger" type="submit">Sair do grupo</button>
-        </form>
     </section>
 
     <section class="card">
@@ -46,15 +43,17 @@ require __DIR__ . '/../partials/header.php';
         <?php foreach ($groupView->members as $memberView): ?>
             <?php $member = $memberView->member; ?>
             <div class="list-item">
-                <div>
-                    <div class="list-item__title"><?= e($memberView->userName) ?></div>
-                    <div class="muted">
-                        Desde <?= e($member->joinedAt->format('d/m/Y')) ?>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div>
+                        <div class="list-item__title"><?= e($memberView->userName) ?></div>
+                        <div class="muted">
+                            Desde <?= e($member->joinedAt->format('d/m/Y')) ?>
+                        </div>
                     </div>
+                    <span class="badge">
+                        <?= $member->isAdmin() ? 'Administrador' : 'Membro' ?>
+                    </span>
                 </div>
-                <span class="badge">
-                    <?= $member->isAdmin() ? 'Administrador' : 'Membro' ?>
-                </span>
                 <?php if ($group->isAdmin($userId) && $member->userId !== $userId): ?>
                     <div class="member-actions">
                         <?php if ($member->isAdmin()): ?>
