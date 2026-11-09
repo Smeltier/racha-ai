@@ -30,14 +30,11 @@ require __DIR__ . '/../partials/header.php';
                 <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">
                     Editar grupo
                 </a>
+                <a class="btn btn--sm btn--danger" href="<?= e(app_url('/groups/' . $group->getId() . '/leave')) ?>">
+                    Sair do grupo
+                </a>
             </div>
         <?php endif; ?>
-        <form method="post"
-              action="<?= e(app_url('/groups/' . $group->getId() . '/leave')) ?>"
-              onsubmit="return confirm('Sair deste grupo?')">
-            <?= csrf_field() ?>
-            <button class="btn btn--sm btn--danger" type="submit">Sair do grupo</button>
-        </form>
     </section>
 
     <section class="card">
