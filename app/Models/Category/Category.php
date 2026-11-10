@@ -12,14 +12,10 @@ final class Category
     private string $name;
 
     private function __construct(?int $id, int $groupId, string $name, string $color) {
-        if (is_null($this->color)) {
-            $this->color = 'FFFFFF';
-        }
-
         $this->id = $id;
         $this->groupId = $groupId;
-        $this->changeName($this->name);
-        $this->changeColor($this->color);
+        $this->changeName($name);
+        $this->changeColor($color);
     }
 
     public function __toString(): string
