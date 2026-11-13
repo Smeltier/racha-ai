@@ -20,6 +20,7 @@ final class CategoryController extends BaseController
         $userId = $this->requireLogin();
 
         $this->render('categories/index', [
+            'groupId' => $groupId,
             'categories' => $this->categoryService->findForGroup($groupId, $userId),
         ]);
     }
@@ -87,6 +88,7 @@ final class CategoryController extends BaseController
     private function renderCategories(int $groupId, int $userId, ?string $errorMessage = null) : void
     {
         $this->render('categories/index', [
+            'groupId' => $groupId,
             'categories' => $this->categoryService->findForGroup($groupId, $userId),
             'errorMessage' => $errorMessage,
         ]);
