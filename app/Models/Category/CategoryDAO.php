@@ -2,7 +2,8 @@
 
 namespace App\Models\Category;
 
-use LogicException;
+use App\Exceptions\PersistenceException;
+use App\Exceptions\StateException;
 use PDO;
 use PDOException;
 
@@ -15,7 +16,7 @@ final class CategoryDAO
     public function insert(Category $category) : void
     {
         if ($category->getId() !== null) {
-            throw new LogicException('Category already persisted');
+            throw new StateException('A categoria já foi persistida');
         }
 
         $stmt = $this->pdo->prepare("
@@ -31,10 +32,10 @@ final class CategoryDAO
             $stmt->execute();
         } catch (PDOException $e) {
             if ($e->getCode() === '23000') {
-                throw new LogicException('Category already exists for this group');
+                throw new StateException('Já existe uma categoria para este grupo');
             }
 
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $id = (int) $this->pdo->lastInsertId();
@@ -44,7 +45,7 @@ final class CategoryDAO
     public function update(Category $category) : void
     {
         if ($category->getId() === null) {
-            throw new LogicException('Category not persisted');
+            throw new StateException('A categoria ainda não foi persistida');
         }
 
         $stmt = $this->pdo->prepare("
@@ -61,14 +62,14 @@ final class CategoryDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 
     public function delete(Category $category) : void
     {
         if ($category->getId() === null) {
-            throw new LogicException('Category not persisted');
+            throw new StateException('A categoria ainda não foi persistida');
         }
 
         $stmt = $this->pdo->prepare("
@@ -81,7 +82,7 @@ final class CategoryDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 
@@ -98,7 +99,7 @@ final class CategoryDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $tuple = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -118,7 +119,7 @@ final class CategoryDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $categories = [];

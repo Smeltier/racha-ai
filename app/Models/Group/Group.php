@@ -2,7 +2,7 @@
 
 namespace App\Models\Group;
 
-use LogicException;
+use App\Exceptions\StateException;
 use DateTimeImmutable;
 use App\Exceptions\ValidationException;
 
@@ -44,7 +44,7 @@ final class Group
     public function assignId(int $id) : void
     {
         if ($this->id !== null) {
-            throw new LogicException("Group already has an id");
+            throw new StateException("O grupo já possui um identificador");
         }
 
         $this->id = $id;
@@ -61,7 +61,7 @@ final class Group
         $this->assertNotDeleted();
 
         if ($this->hasMember($userId)) {
-            throw new ValidationException('User is already a member of this group.');
+            throw new ValidationException('O usuário já é membro deste grupo.');
         }
 
         $now = new DateTimeImmutable();
@@ -74,7 +74,7 @@ final class Group
 
         $member = $this->requireMember($userId);
         if ($member->isAdmin() && $this->adminCount() === 1) {
-            throw new ValidationException('The last admin cannot be removed.');
+            throw new ValidationException('O último administrador não pode ser removido.');
         }
         unset($this->members[$userId]);
     }
@@ -85,7 +85,7 @@ final class Group
         $member = $this->requireMember($userId);
 
         if ($member->isAdmin() && $this->adminCount() === 1 && $this->memberCount() > 1) {
-            throw new ValidationException('The last admin cannot leave the group.');
+            throw new ValidationException('O último administrador não pode sair do grupo.');
         }
 
         unset($this->members[$userId]);
@@ -108,7 +108,7 @@ final class Group
 
         $member = $this->requireMember($userId);
         if ($member->isAdmin() && $this->adminCount() === 1) {
-            throw new ValidationException('The last admin cannot be demoted.');
+            throw new ValidationException('O último administrador não pode ser rebaixado.');
         }
 
         $this->members[$userId] = $member->withRole(GroupRole::Member);
@@ -167,7 +167,7 @@ final class Group
 
     private function requireMember(int $userId) : GroupMember
     {
-        return $this->members[$userId] ?? throw new ValidationException('User is not a member of this group.');
+        return $this->members[$userId] ?? throw new ValidationException('O usuário não é membro deste grupo.');
     }
 
     private function adminCount() : int
@@ -180,7 +180,7 @@ final class Group
         $name = trim($name);
 
         if ($name === '' || mb_strlen($name) > self::MAX_NAME_LENGTH) {
-            throw new ValidationException('Group name must have 1 to 200 characters.');
+            throw new ValidationException('O nome do grupo deve ter entre 1 e 200 caracteres.');
         }
 
         return $name;
@@ -189,7 +189,7 @@ final class Group
     private function assertNotDeleted() : void
     {
         if ($this->isDeleted()) {
-            throw new LogicException("User is deleted");
+            throw new StateException("O usuário foi excluído");
         }
     }
 }

@@ -4,7 +4,8 @@ namespace App\Models\Invite;
 
 use App\Services\InviteView;
 use DateTimeImmutable;
-use LogicException;
+use App\Exceptions\PersistenceException;
+use App\Exceptions\StateException;
 use PDO;
 use PDOException;
 
@@ -20,7 +21,7 @@ final class InviteDAO
     public function insert(Invite $invite) : void
     {
         if ($invite->getId() !== null) {
-            throw new LogicException('Invite already persisted');
+            throw new StateException('O convite já foi persistido');
         }
 
         $stmt = $this->pdo->prepare("
@@ -38,9 +39,9 @@ final class InviteDAO
             $stmt->execute();
         } catch (PDOException $e) {
             if ($e->getCode() === '23000') {
-                throw new LogicException('Invite already exists for this user and group');
+                throw new StateException('Já existe um convite para este usuário e grupo');
             }
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $id = (int) $this->pdo->lastInsertId();
@@ -50,7 +51,7 @@ final class InviteDAO
     public function update(Invite $invite) : void
     {
         if ($invite->getId() === null) {
-            throw new LogicException('Invite not yet persisted');
+            throw new StateException('O convite ainda não foi persistido');
         }
 
         $stmt = $this->pdo->prepare("
@@ -65,7 +66,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 
@@ -81,7 +82,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 
@@ -98,7 +99,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $tuple = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -118,7 +119,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $invites = [];
@@ -160,7 +161,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $invites = [];
@@ -203,7 +204,7 @@ final class InviteDAO
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
 
         $invites = [];

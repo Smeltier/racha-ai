@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use LogicException;
+use App\Exceptions\StateException;
 use App\Http\Session;
 use App\Services\InviteService;
 
@@ -37,7 +37,7 @@ final class InviteController extends BaseController
 
         try {
             $this->inviteService->createForEmail($userId, $email, $groupId);
-        } catch (LogicException $e) {
+        } catch (StateException $e) {
             $this->renderGroupInvites($groupId, $userId, $e->getMessage());
             return;
         }
@@ -51,7 +51,7 @@ final class InviteController extends BaseController
 
         try {
             $this->inviteService->accept($inviteId, $userId);
-        } catch (LogicException $e) {
+        } catch (StateException $e) {
             $this->renderUserInvites($userId, $e->getMessage());
             return;
         }
@@ -65,7 +65,7 @@ final class InviteController extends BaseController
 
         try {
             $this->inviteService->decline($inviteId, $userId);
-        } catch (LogicException $e) {
+        } catch (StateException $e) {
             $this->renderUserInvites($userId, $e->getMessage());
             return;
         }
@@ -80,9 +80,9 @@ final class InviteController extends BaseController
         try {
             $invite = $this->inviteService->findForGroupAdmin($inviteId, $userId);
             $this->inviteService->cancel($inviteId, $userId);
-        } catch (LogicException $e) {
+        } catch (StateException $e) {
             http_response_code(404);
-            echo 'Invite not found';
+            echo 'Convite não encontrado';
             return;
         }
 
@@ -93,9 +93,9 @@ final class InviteController extends BaseController
     {
         try {
             $invites = $this->inviteService->findByGroupIdView($groupId, $userId);
-        } catch (LogicException) {
+        } catch (StateException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 

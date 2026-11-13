@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
 use App\Http\Session;
 use App\Services\CategoryService;
 
@@ -33,7 +33,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->create($groupId, $userId, $name, $color);
-        } catch (InvalidArgumentException $e) {
+        } catch (ValidationException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -47,7 +47,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->delete($categoryId, $groupId, $userId);
-        } catch (InvalidArgumentException $e) {
+        } catch (ValidationException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -62,7 +62,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->rename($categoryId, $groupId, $userId, $newName);
-        } catch (InvalidArgumentException $e) {
+        } catch (ValidationException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -77,7 +77,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->recolor($categoryId, $groupId, $userId, $newColor);
-        } catch (InvalidArgumentException $e) {
+        } catch (ValidationException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }

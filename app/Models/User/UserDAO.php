@@ -3,7 +3,8 @@
 namespace App\Models\User;
 
 use Throwable;
-use LogicException;
+use App\Exceptions\PersistenceException;
+use App\Exceptions\StateException;
 use PDO;
 use PDOException;
 use App\Exceptions\EmailAlreadyInUseException;
@@ -20,7 +21,7 @@ final class UserDAO
     public function insert(User $user) : int
     {
         if ($user->getId() !== null) {
-            throw new LogicException("User already persisted");
+            throw new StateException("O usuário já foi persistido");
         }
 
         $ownsTransaction = !$this->pdo->inTransaction();
@@ -44,9 +45,9 @@ final class UserDAO
                 ]);
             } catch (PDOException $e) {
                 if (($e->errorInfo[1] ?? null) == 1062) {
-                    throw new EmailAlreadyInUseException("Email already in use", 0, $e);
+                    throw new EmailAlreadyInUseException("O e-mail já está em uso", 0, $e);
                 }
-                throw $e;
+                throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
             }
 
             $id = (int) $this->pdo->lastInsertId();
@@ -62,14 +63,14 @@ final class UserDAO
                 $this->pdo->rollBack();
             }
 
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 
     public function update(User $user) : void
     {
         if ($user->getId() === null) {
-            throw new LogicException("User not persisted");
+            throw new StateException("O usuário ainda não foi persistido");
         }
 
         $ownsTransaction = !$this->pdo->inTransaction();
@@ -98,10 +99,10 @@ final class UserDAO
                 ]);
             } catch (PDOException $e) {
                 if (($e->errorInfo[1] ?? null) == 1062) {
-                    throw new EmailAlreadyInUseException("Email already in use", 0, $e);
+                    throw new EmailAlreadyInUseException("O e-mail já está em uso", 0, $e);
                 }
 
-                throw $e;
+                throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
             }
 
             if ($ownsTransaction) {
@@ -112,7 +113,7 @@ final class UserDAO
                 $this->pdo->rollBack();
             }
 
-            throw $e;
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
         }
     }
 

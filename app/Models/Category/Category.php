@@ -2,7 +2,7 @@
 
 namespace App\Models\Category;
 
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
 
 final class Category
 {
@@ -38,11 +38,11 @@ final class Category
         $name = trim($name);
 
         if ($name === '') {
-            throw new InvalidArgumentException('Name cannot be empty.');
+            throw new ValidationException('O nome não pode ficar vazio.');
         }
 
         if (mb_strlen($name) > 50) {
-            throw new InvalidArgumentException('Name must be less or equal to 50 characters.');
+            throw new ValidationException('O nome deve ter no máximo 50 caracteres.');
         }
 
         $this->name = $name;
@@ -53,11 +53,11 @@ final class Category
         $color = trim($color);
 
         if ($color === '') {
-            throw new InvalidArgumentException('Color cannot be empty.');
+            throw new ValidationException('A cor não pode ficar vazia.');
         }
 
         if (!preg_match('/^[A-Fa-f0-9]{6}$/', $color)) {
-            throw new InvalidArgumentException('Color must be a valid hex color code.');
+            throw new ValidationException('A cor deve ser um código hexadecimal válido.');
         }
 
         $this->color = $color;
@@ -66,7 +66,7 @@ final class Category
     public function assignId(int $id): void
     {
         if ($this->id !== null) {
-            throw new InvalidArgumentException('ID is already assigned.');
+            throw new ValidationException('O identificador já foi atribuído.');
         }
 
         $this->id = $id;

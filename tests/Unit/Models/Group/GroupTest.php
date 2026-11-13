@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models\Group;
 
-use LogicException;
+use App\Exceptions\StateException;
 use DateTimeImmutable;
 use App\Models\Group\Group;
 use App\Models\Group\GroupMember;
@@ -115,7 +115,7 @@ final class GroupTest extends TestCase
         $group = $this->newGroup();
         $group->assignId(1);
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->assignId(2);
     }
@@ -173,7 +173,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->rename('New name');
     }
@@ -212,7 +212,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->addMember(self::OTHER_ID);
     }
@@ -302,7 +302,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->removeMember(self::MEMBER_ID);
     }
@@ -339,7 +339,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->promote(self::MEMBER_ID);
     }
@@ -389,7 +389,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->demote(self::CREATOR_ID);
     }
@@ -408,7 +408,7 @@ final class GroupTest extends TestCase
     {
         $group = $this->deletedGroup();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $group->delete();
     }

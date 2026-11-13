@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use LogicException;
+use App\Exceptions\StateException;
 use Throwable;
 use PDO;
 use App\Exceptions\ValidationException;
@@ -25,25 +25,25 @@ final class InviteService
     public function create(int $inviterUserId, int $invitedUserId, int $groupId) : Invite
     {
         if ($inviterUserId === $invitedUserId) {
-            throw new LogicException('Cannot invite yourself to a group');
+            throw new StateException('Não é possível convidar a si mesmo para um grupo');
         }
 
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null) {
-            throw new LogicException('Group not found');
+            throw new StateException('Grupo não encontrado');
         }
 
         if (!$group->isAdmin($inviterUserId)) {
-            throw new LogicException('Only group admins can invite users');
+            throw new StateException('Somente administradores do grupo podem convidar usuários');
         }
 
         if ($this->userDao->findById($invitedUserId) === null) {
-            throw new LogicException('User not found');
+            throw new StateException('Usuário não encontrado');
         }
 
         if ($group->hasMember($invitedUserId)) {
-            throw new LogicException('User is already a member of the group');
+            throw new StateException('O usuário já é membro do grupo');
         }
 
         $this->inviteDao->expirePending();
@@ -59,7 +59,7 @@ final class InviteService
     
             if ($existingInvite !== null) {
                 if ($existingInvite->isPending()) {
-                    throw new LogicException('An invite is already pending for this user and group');
+                    throw new StateException('Já existe um convite pendente para este usuário e grupo');
                 }
     
                 $this->inviteDao->delete($existingInvite->getId());
@@ -87,11 +87,11 @@ final class InviteService
         try {
             $user = $this->userDao->findByEmail(Email::from($email));
         } catch (ValidationException $e) {
-            throw new LogicException('Invalid email address', 0, $e);
+            throw new StateException('Endereço de e-mail inválido', 0, $e);
         }
 
         if ($user === null || $user->getId() === null) {
-            throw new LogicException('User not found');
+            throw new StateException('Usuário não encontrado');
         }
 
         return $this->create($inviterUserId, $user->getId(), $groupId);
@@ -103,11 +103,11 @@ final class InviteService
         $group = $this->groupDao->findById($invite->getGroupId());
 
         if ($group === null || !$group->isAdmin($userId)) {
-            throw new LogicException('Invite not found');
+            throw new StateException('Convite não encontrado');
         }
 
         if (!$invite->isPending()) {
-            throw new LogicException('Only pending invites can be canceled');
+            throw new StateException('Somente convites pendentes podem ser cancelados');
         }
 
         $this->inviteDao->delete($inviteId);
@@ -119,7 +119,7 @@ final class InviteService
         $group = $this->groupDao->findById($invite->getGroupId());
 
         if ($group === null) {
-            throw new LogicException('Group not found');
+            throw new StateException('Grupo não encontrado');
         }
 
         $ownsTransaction = !$this->pdo->inTransaction();
@@ -165,7 +165,7 @@ final class InviteService
         $group = $this->groupDao->findById($invite->getGroupId());
 
         if ($group === null || !$group->isAdmin($userId)) {
-            throw new LogicException('Invite not found');
+            throw new StateException('Convite não encontrado');
         }
 
         return $invite;
@@ -196,7 +196,7 @@ final class InviteService
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null || !$group->isAdmin($userId)) {
-            throw new LogicException('Group not found');
+            throw new StateException('Grupo não encontrado');
         }
 
         return $this->inviteDao->findByGroupId($groupId);
@@ -209,7 +209,7 @@ final class InviteService
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null || !$group->isAdmin($userId)) {
-            throw new LogicException('Group not found');
+            throw new StateException('Grupo não encontrado');
         }
 
         return $this->inviteDao->findViewByGroupId($groupId);
@@ -222,7 +222,7 @@ final class InviteService
         $invite = $this->inviteDao->findById($inviteId);
 
         if ($invite === null) {
-            throw new LogicException('Invite not found');
+            throw new StateException('Convite não encontrado');
         }
 
         return $invite;
@@ -233,7 +233,7 @@ final class InviteService
         $invite = $this->getInvite($inviteId);
 
         if ($invite->getInvitedUserId() !== $userId) {
-            throw new LogicException('Invite not found');
+            throw new StateException('Convite não encontrado');
         }
 
         return $invite;
