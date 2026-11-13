@@ -10,12 +10,15 @@ use App\Core\Connection;
 use App\Controllers\UserController;
 use App\Controllers\GroupController;
 use App\Controllers\InviteController;
+use App\Controllers\CategoryController;
 use App\Models\Group\GroupDAO;
 use App\Models\User\UserDAO;
 use App\Models\Invite\InviteDAO;
+use App\Models\Category\CategoryDAO;
 use App\Services\GroupService;
 use App\Services\UserService;
 use App\Services\InviteService;
+use App\Services\CategoryService;
 
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -47,6 +50,11 @@ $groupService = new GroupService(
     new UserDAO($pdo)
 );
 
+$categoryService = new CategoryService(
+    new CategoryDAO($pdo),
+    new GroupDAO($pdo)
+);
+
 $inviteService = new InviteService(
     new InviteDAO($pdo),
     new GroupDAO($pdo),
@@ -58,6 +66,7 @@ $factories = [
     UserController::class => fn() => new UserController($userService, $session),
     GroupController::class => fn() => new GroupController($groupService, $session),
     InviteController::class => fn() => new InviteController($inviteService, $session),
+    CategoryController::class => fn() => new CategoryController($categoryService, $session),
 ];
 
 $router = new Router(

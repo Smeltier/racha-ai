@@ -3,6 +3,7 @@
 use App\Controllers\UserController;
 use App\Controllers\GroupController;
 use App\Controllers\InviteController;
+use App\Controllers\CategoryController;
 
 return [
     ['GET', '/', UserController::class, 'showLogin'],
@@ -15,6 +16,7 @@ return [
     ['POST', '/profile', UserController::class, 'updateProfile'],
     ['POST', '/profile/password', UserController::class, 'updatePassword'],
     ['POST', '/profile/delete', UserController::class, 'delete'],
+
     ['GET', '/groups', GroupController::class, 'showGroups'],
     ['GET', '/groups/create', GroupController::class, 'showCreate'],
     ['GET', '/groups/{id}', GroupController::class, 'show'],
@@ -26,10 +28,17 @@ return [
     ['POST', '/groups/{groupId}/members/{memberId}/remove', GroupController::class, 'removeMember'],
     ['POST', '/groups/{groupId}/members/{memberId}/promote', GroupController::class, 'promoteMember'],
     ['POST', '/groups/{groupId}/members/{memberId}/demote', GroupController::class, 'demoteMember'],
+
     ['GET', '/invites', InviteController::class, 'showInvites'],
     ['GET', '/groups/{groupId}/invites', InviteController::class, 'showGroupInvites'],
     ['POST', '/groups/{groupId}/invites', InviteController::class, 'invite'],
     ['POST', '/invites/{inviteId}/accept', InviteController::class, 'accept'],
     ['POST', '/invites/{inviteId}/decline', InviteController::class, 'decline'],
     ['POST', '/invites/{inviteId}/cancel', InviteController::class, 'cancel'],
+
+    ['GET', '/groups/{groupId}/categories', CategoryController::class, 'showCategories'],
+    ['POST', '/groups/{groupId}/categories', CategoryController::class, 'create'],
+    ['POST', '/groups/{groupId}/categories/{categoryId}/delete', CategoryController::class, 'delete'],
+    ['POST', '/groups/{groupId}/categories/{categoryId}/rename', CategoryController::class, 'rename'],
+    ['POST', '/groups/{groupId}/categories/{categoryId}/recolor', CategoryController::class, 'recolor'],
 ];

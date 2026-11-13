@@ -443,3 +443,63 @@ a:hover {
 .form__submit {
   align-self: flex-start;
 }
+
+.category-item {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.8fr) minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--field);
+}
+
+.category-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.category-actions form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.category-actions .field {
+  width: 100%;
+  min-width: 0;
+}
+
+.category-delete {
+  justify-content: center;
+}
+
+@media (max-width: 850px) {
+  .category-item {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .category-actions {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .category-delete {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .category-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .category-delete {
+    grid-column: auto;
+  }
+}
