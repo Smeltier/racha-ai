@@ -25,6 +25,14 @@ final class CategoryService
         return $category;
     }
 
+    public function delete(int $categoryId, int $groupId, int $userId) : void
+    {
+        $this->getGroupForAdmin($groupId, $userId);
+
+        $category = $this->getCategoryForGroup($categoryId, $groupId);
+        $this->categoryDao->delete($category);
+    }
+
     public function rename(int $categoryId, int $groupId, int $userId, string $newName) : Category
     {
         $this->getGroupForAdmin($groupId, $userId);
