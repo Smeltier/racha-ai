@@ -32,7 +32,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->create($groupId, $userId, $name, $color);
-        } catch (LogicException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -46,7 +46,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->delete($categoryId, $groupId, $userId);
-        } catch (LogicException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -61,7 +61,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->rename($categoryId, $groupId, $userId, $newName);
-        } catch (LogicException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
@@ -76,7 +76,7 @@ final class CategoryController extends BaseController
 
         try {
             $this->categoryService->recolor($categoryId, $groupId, $userId, $newColor);
-        } catch (LogicException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->renderCategories($groupId, $userId, $e->getMessage());
             return;
         }
