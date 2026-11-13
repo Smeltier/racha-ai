@@ -27,11 +27,11 @@ require __DIR__ . '/../partials/header.php';
                 <a class="btn btn--sm" href="<?= e(app_url('/groups/' . $group->getId() . '/invites')) ?>">
                     Gerenciar convites
                 </a>
-                <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">
-                    Editar grupo
-                </a>
                 <a class="btn btn--sm" href="<?= e(app_url('/groups/' . $group->getId() . '/categories')) ?>">
                     Gerenciar categorias
+                </a>
+                <a class="btn btn--sm btn--ghost" href="<?= e(app_url('/groups/' . $group->getId() . '/edit')) ?>">
+                    Editar grupo
                 </a>
                 <a class="btn btn--sm btn--danger" href="<?= e(app_url('/groups/' . $group->getId() . '/leave')) ?>">
                     Sair do grupo
