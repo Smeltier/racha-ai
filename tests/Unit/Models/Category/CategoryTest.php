@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models\Category;
 
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
 use App\Models\Category\Category;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -41,19 +41,19 @@ final class CategoryTest extends TestCase
 
     public function testShouldThrowExceptionWhenNameIsEmpty() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, '   ', $this->validColor);
     }
 
     public function testShouldThrowExceptionWhenNameIsBlank() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, '', $this->validColor);
     }
 
     public function testShouldThrowExceptionWhenNameIsTooLong() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, str_repeat('a', 51), $this->validColor);
     }
 
@@ -64,7 +64,7 @@ final class CategoryTest extends TestCase
         try {
             $category->changeName('');
             $this->fail('Expected InvalidArgumentException not thrown.');
-        } catch (InvalidArgumentException) {
+        } catch (ValidationException) {
             // Expected exception.
         }
 
@@ -80,19 +80,19 @@ final class CategoryTest extends TestCase
 
     public function testShouldThrowExceptionWhenColorIsEmpty() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, $this->validName, '   ');
     }
 
     public function testShouldThrowExceptionWhenColorIsBlank() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, $this->validName, '');
     }
 
     public function testShouldThrowExceptionWhenColorIsInvalid() : void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ValidationException::class);
         Category::create(1, $this->validName, 'ZZZZZZ');
     }
 
@@ -103,7 +103,7 @@ final class CategoryTest extends TestCase
         try {
             $category->changeColor('ZZZZZZ');
             $this->fail('Expected InvalidArgumentException not thrown.');
-        } catch (InvalidArgumentException) {
+        } catch (ValidationException) {
             // Expected exception.
         }
 
@@ -133,7 +133,7 @@ final class CategoryTest extends TestCase
         try {
             $category->assignId(10);
             $this->fail('Expected InvalidArgumentException not thrown.');
-        } catch (InvalidArgumentException) {
+        } catch (ValidationException) {
             // Expected exception.
         }
 

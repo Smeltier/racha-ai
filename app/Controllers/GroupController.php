@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use LogicException;
+use App\Exceptions\StateException;
 use App\Http\Session;
 use App\Services\GroupService;
 use App\Exceptions\ValidationException;
@@ -48,11 +48,11 @@ final class GroupController extends BaseController
         try {
             $group = $this->groupService->findByIdForUser($id, $userId);
             if (!$group->isAdmin($userId)) {
-                throw new GroupNotFoundException('Group not found');
+                throw new GroupNotFoundException('Grupo não encontrado');
             }
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 
@@ -70,12 +70,12 @@ final class GroupController extends BaseController
             $this->groupService->changeNameForAdmin($id, $userId, $name);
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         } catch (ValidationException $e) {
             $this->renderEditError($id, $userId, $name, $e->getMessage());
             return;
-        } catch (LogicException $e) {
+        } catch (StateException $e) {
             $this->renderEditError($id, $userId, $name, $e->getMessage());
             return;
         }
@@ -91,7 +91,7 @@ final class GroupController extends BaseController
             $this->groupService->deleteForAdmin($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 
@@ -106,14 +106,14 @@ final class GroupController extends BaseController
             $this->groupService->leave($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         } catch (ValidationException $e) {
             try {
                 $groupView = $this->groupService->findByIdViewForUser($id, $userId);
             } catch (GroupNotFoundException) {
                 http_response_code(404);
-                echo 'Group not found';
+                echo 'Grupo não encontrado';
                 return;
             }
 
@@ -164,7 +164,7 @@ final class GroupController extends BaseController
             $groupView = $this->groupService->findByIdViewForUser($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 
@@ -186,14 +186,14 @@ final class GroupController extends BaseController
             };
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         } catch (ValidationException $e) {
             try {
                 $groupView = $this->groupService->findByIdViewForUser($groupId, $adminId);
             } catch (GroupNotFoundException) {
                 http_response_code(404);
-                echo 'Group not found';
+                echo 'Grupo não encontrado';
                 return;
             }
 
@@ -203,9 +203,9 @@ final class GroupController extends BaseController
                 'error' => $e->getMessage(),
             ]);
             return;
-        } catch (LogicException) {
+        } catch (StateException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 
@@ -218,7 +218,7 @@ final class GroupController extends BaseController
             $group = $this->groupService->findByIdForUser($id, $userId);
         } catch (GroupNotFoundException) {
             http_response_code(404);
-            echo 'Group not found';
+            echo 'Grupo não encontrado';
             return;
         }
 

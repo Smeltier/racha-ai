@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use LogicException;
+use App\Exceptions\StateException;
 use App\Models\Group\Group;
 use App\Models\Group\GroupDAO;
 use App\Models\User\UserDAO;
@@ -65,7 +65,7 @@ final class GroupService
         $group = $this->getGroup($id);
 
         if (!$group->hasMember($userId)) {
-            throw new GroupNotFoundException('Group not found');
+            throw new GroupNotFoundException('Grupo não encontrado');
         }
 
         return $group;
@@ -80,7 +80,7 @@ final class GroupService
             $user = $this->userDao->findById($member->userId);
 
             if ($user === null) {
-                throw new GroupNotFoundException('Group not found');
+                throw new GroupNotFoundException('Grupo não encontrado');
             }
 
             $members[] = new GroupMemberView($member, $user->getName());
@@ -94,7 +94,7 @@ final class GroupService
         $groups = $this->dao->findByUserId($userId);
 
         if (empty($groups)) {
-            throw new GroupNotFoundException('Groups not found');
+            throw new GroupNotFoundException('Grupos não encontrados');
         }
 
         return $groups;
@@ -103,7 +103,7 @@ final class GroupService
     public function addMembers(int $id, array $members) : Group
     {
         if (empty($members)) {
-            throw new LogicException('Members list cannot be empty');
+            throw new StateException('A lista de membros não pode estar vazia');
         }
 
         $group = $this->getGroup($id);
@@ -131,7 +131,7 @@ final class GroupService
         $group = $this->getGroup($id);
 
         if (!$group->hasMember($userId)) {
-            throw new GroupNotFoundException('Group not found');
+            throw new GroupNotFoundException('Grupo não encontrado');
         }
 
         $group->leave($userId);
@@ -159,7 +159,7 @@ final class GroupService
         $group = $this->getGroup($id);
 
         if (!$group->isAdmin($adminId)) {
-            throw new GroupNotFoundException('Group not found');
+            throw new GroupNotFoundException('Grupo não encontrado');
         }
 
         return $group;
@@ -170,7 +170,7 @@ final class GroupService
         $group = $this->dao->findById($id);
 
         if ($group === null) {
-            throw new GroupNotFoundException('Group not found');
+            throw new GroupNotFoundException('Grupo não encontrado');
         }
 
         return $group;

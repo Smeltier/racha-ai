@@ -2,6 +2,4 @@
 
 namespace App\Exceptions;
 
-use Exception;
-
-class GroupNotFoundException extends Exception {}
+class GroupNotFoundException extends NotFoundException {}

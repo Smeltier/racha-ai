@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models\Invite;
 
-use LogicException;
+use App\Exceptions\StateException;
 use DateTimeImmutable;
 use App\Models\Invite\Invite;
 use App\Models\Invite\InviteStatus;
@@ -151,7 +151,7 @@ final class InviteTest extends TestCase
             new DateTimeImmutable('+1 week')
         );
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $invite->accept();
     }
@@ -168,7 +168,7 @@ final class InviteTest extends TestCase
             new DateTimeImmutable('+1 week')
         );
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $invite->decline();
     }
@@ -185,7 +185,7 @@ final class InviteTest extends TestCase
             new DateTimeImmutable('+1 week')
         );
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $invite->expire();
     }
@@ -212,7 +212,7 @@ final class InviteTest extends TestCase
 
         try {
             $invite->accept();
-        } catch (LogicException) {
+        } catch (StateException) {
         }
 
         $this->assertSame(InviteStatus::Declined, $invite->getStatus());

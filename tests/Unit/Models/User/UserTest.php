@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models\User;
 
-use LogicException;
+use App\Exceptions\StateException;
 use DateTimeImmutable;
 use App\Models\User\User;
 use App\Exceptions\ValidationException;
@@ -96,7 +96,7 @@ final class UserTest extends TestCase
         $user = User::register(self::VALID_NAME, self::VALID_EMAIL_VALUE, self::VALID_PASSWORD);
         $user->assignId(1);
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $user->assignId(2);
     }
@@ -300,7 +300,7 @@ final class UserTest extends TestCase
         $user->assignId(7);
         $user->delete(new DateTimeImmutable('2026-10-11 18:00:00'));
 
-        $this->expectException(LogicException::class);
+        $this->expectException(StateException::class);
 
         $user->changePassword(self::VALID_PASSWORD, 'new_password123');
     }

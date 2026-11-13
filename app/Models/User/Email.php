@@ -13,7 +13,7 @@ final class Email
         $value = strtolower(trim($value));
 
         if (!filter_var($value, FILTER_VALIDATE_EMAIL) || strlen($value) > 320) {
-            throw new ValidationException('Invalid email');
+            throw new ValidationException('E-mail inválido');
         }
 
         $this->value = $value;

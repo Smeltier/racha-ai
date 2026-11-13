@@ -2,7 +2,7 @@
 
 namespace App\Models\User;
 
-use LogicException;
+use App\Exceptions\StateException;
 use DateTimeImmutable;
 use App\Exceptions\ValidationException;
 
@@ -45,7 +45,7 @@ final class User
     public function assignId(int $id): void
     {
         if ($this->id !== null) {
-            throw new LogicException('User already has an id');
+            throw new StateException('O usuário já possui um identificador');
         }
 
         $this->id = $id;
@@ -70,7 +70,7 @@ final class User
         $this->assertNotDeleted();
 
         if (!$this->verifyPassword($currentPassword)) {
-            throw new ValidationException("Current password doesn't match");
+            throw new ValidationException("A senha atual não confere");
         }
 
         $this->passwordHash = self::hashPassword($newPassword);
@@ -79,7 +79,7 @@ final class User
     public function delete(DateTimeImmutable $now) : void
     {
         if ($this->id === null) {
-            throw new LogicException("User not persisted");
+            throw new StateException("O usuário ainda não foi persistido");
         }
 
         $this->assertNotDeleted();
@@ -125,7 +125,7 @@ final class User
         $name = trim($name);
 
         if ($name === '' || mb_strlen($name) > 150) {
-            throw new ValidationException("Name must have between 1 and 150 characters");
+            throw new ValidationException("O nome deve ter entre 1 e 150 caracteres");
         }
 
         return $name;
@@ -134,7 +134,7 @@ final class User
     private static function hashPassword(string $plainPassword) : string
     {
         if (mb_strlen($plainPassword) < 8) {
-            throw new ValidationException('Password must have at least 8 characters');
+            throw new ValidationException('A senha deve ter pelo menos 8 caracteres');
         }
 
         return password_hash($plainPassword, PASSWORD_DEFAULT);
@@ -143,7 +143,7 @@ final class User
     private function assertNotDeleted() : void
     {
         if ($this->isDeleted()) {
-            throw new LogicException("User is deleted");
+            throw new StateException("O usuário foi excluído");
         }
     }
 }

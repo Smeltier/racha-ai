@@ -3,7 +3,7 @@
 namespace App\Models\Group;
 
 use DateTimeImmutable;
-use LogicException;
+use App\Exceptions\StateException;
 use PDO;
 use Throwable;
 
@@ -19,7 +19,7 @@ final class GroupDAO
     public function insert(Group $group) : void
     {
         if ($group->getId() !== null) {
-            throw new LogicException('Group already persisted');
+            throw new StateException('O grupo já foi persistido');
         }
 
         $ownsTransaction = !$this->pdo->inTransaction();
@@ -50,7 +50,7 @@ final class GroupDAO
     public function update(Group $group) : void
     {
         if ($group->getId() === null) {
-            throw new LogicException('Group not persisted');
+            throw new StateException('O grupo ainda não foi persistido');
         }
 
         $ownsTransaction = !$this->pdo->inTransaction();

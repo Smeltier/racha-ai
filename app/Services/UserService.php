@@ -31,11 +31,11 @@ final class UserService
         try {
             $user = $this->dao->findByEmail(Email::from($email));
         } catch (ValidationException) {
-            throw new InvalidCredentialsException("Invalid email or password");
+            throw new InvalidCredentialsException("E-mail ou senha inválidos");
         }
 
         if ($user === null || !$user->verifyPassword($plainPassword)) {
-            throw new InvalidCredentialsException("Invalid email or password");
+            throw new InvalidCredentialsException("E-mail ou senha inválidos");
         }
 
         return $user;
@@ -91,7 +91,7 @@ final class UserService
         $user = $this->dao->findById($id);
 
         if ($user === null) {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("Usuário não encontrado");
         }
 
         return $user;

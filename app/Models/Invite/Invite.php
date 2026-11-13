@@ -3,7 +3,7 @@
 namespace App\Models\Invite;
 
 use DateTimeImmutable;
-use LogicException;
+use App\Exceptions\StateException;
 
 final class Invite
 {
@@ -50,7 +50,7 @@ final class Invite
         $this->expireIfNecessary(new DateTimeImmutable());
 
         if ($this->status !== InviteStatus::Pending) {
-            throw new LogicException("Cannot accept an invite that is not pending");
+            throw new StateException("Não é possível aceitar um convite que não está pendente");
         }
 
         $this->status = InviteStatus::Accepted;
@@ -61,7 +61,7 @@ final class Invite
         $this->expireIfNecessary(new DateTimeImmutable());
 
         if ($this->status !== InviteStatus::Pending) {
-            throw new LogicException("Cannot decline an invite that is not pending");
+            throw new StateException("Não é possível recusar um convite que não está pendente");
         }
 
         $this->status = InviteStatus::Declined;
@@ -72,7 +72,7 @@ final class Invite
         $this->expireIfNecessary(new DateTimeImmutable());
 
         if ($this->status !== InviteStatus::Pending) {
-            throw new LogicException("Cannot expire an invite that is not pending");
+            throw new StateException("Não é possível expirar um convite que não está pendente");
         }
 
         $this->status = InviteStatus::Expired;
@@ -96,7 +96,7 @@ final class Invite
     public function assignId(int $id) : void
     {
         if ($this->id !== null) {
-            throw new LogicException("Cannot assign an ID to an invite that already has one");
+            throw new StateException("Não é possível atribuir um identificador a um convite que já possui um");
         }
 
         $this->id = $id;

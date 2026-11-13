@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use LogicException;
+use App\Exceptions\StateException;
 use App\Models\Group\Group;
 use App\Models\Group\GroupDAO;
 use App\Models\Category\Category;
@@ -66,7 +66,7 @@ final class CategoryService
         $group = $this->groupDao->findById($groupId);
 
         if ($group === null) {
-            throw new LogicException('Group not found');
+            throw new StateException('Grupo não encontrado');
         }
 
         return $group;
@@ -77,7 +77,7 @@ final class CategoryService
         $group = $this->getGroup($groupId);
 
         if (!$group->hasMember($userId)) {
-            throw new LogicException('Only group members can perform this action');
+            throw new StateException('Somente membros do grupo podem realizar esta ação');
         }
 
         return $group;
@@ -88,7 +88,7 @@ final class CategoryService
         $group = $this->getGroup($groupId);
 
         if (!$group->isAdmin($userId)) {
-            throw new LogicException('Only group admins can perform this action');
+            throw new StateException('Somente administradores do grupo podem realizar esta ação');
         }
 
         return $group;
@@ -99,7 +99,7 @@ final class CategoryService
         $category = $this->categoryDao->findById($categoryId);
 
         if ($category === null) {
-            throw new LogicException('Category not found');
+            throw new StateException('Categoria não encontrada');
         }
 
         return $category;
@@ -110,7 +110,7 @@ final class CategoryService
         $category = $this->getCategory($categoryId);
 
         if ($category->getGroupId() !== $groupId) {
-            throw new LogicException('Category not found');
+            throw new StateException('Categoria não encontrada');
         }
 
         return $category;
