@@ -64,7 +64,7 @@ require __DIR__ . '/../partials/header.php';
             <p class="muted">Nenhuma categoria cadastrada.</p>
         <?php else: ?>
             <?php foreach ($categories as $category): ?>
-                <div class="list-item">
+                <div class="category-item">
                     <div>
                         <div class="list-item__title">
                             <span
@@ -78,7 +78,7 @@ require __DIR__ . '/../partials/header.php';
                         </div>
                     </div>
 
-                    <div class="member-actions">
+                    <div class="category-actions">
                         <form method="post"
                               action="<?= e(app_url('/groups/' . $groupId . '/categories/' . $category->getId() . '/rename')) ?>">
                             <?= csrf_field() ?>
@@ -108,7 +108,8 @@ require __DIR__ . '/../partials/header.php';
                             </button>
                         </form>
 
-                        <form method="post"
+                        <form class="category-delete"
+                              method="post"
                               action="<?= e(app_url('/groups/' . $groupId . '/categories/' . $category->getId() . '/delete')) ?>"
                               onsubmit="return confirm('Excluir esta categoria?')">
                             <?= csrf_field() ?>
