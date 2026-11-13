@@ -63,7 +63,7 @@ final class CategoryTest extends TestCase
 
         try {
             $category->changeName('');
-            $this->fail('Expected InvalidArgumentException not thrown.');
+            $this->fail('Esperava-se ValidationException, mas nenhuma exceção foi lançada.');
         } catch (ValidationException) {
             // Expected exception.
         }
@@ -102,7 +102,7 @@ final class CategoryTest extends TestCase
 
         try {
             $category->changeColor('ZZZZZZ');
-            $this->fail('Expected InvalidArgumentException not thrown.');
+            $this->fail('Esperava-se ValidationException, mas nenhuma exceção foi lançada.');
         } catch (ValidationException) {
             // Expected exception.
         }
@@ -132,7 +132,7 @@ final class CategoryTest extends TestCase
 
         try {
             $category->assignId(10);
-            $this->fail('Expected InvalidArgumentException not thrown.');
+            $this->fail('Esperava-se ValidationException, mas nenhuma exceção foi lançada.');
         } catch (ValidationException) {
             // Expected exception.
         }
