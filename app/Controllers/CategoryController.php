@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use LogicException;
+use InvalidArgumentException;
 use App\Http\Session;
 use App\Services\CategoryService;
 
