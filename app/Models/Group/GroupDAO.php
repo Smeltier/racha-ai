@@ -3,8 +3,11 @@
 namespace App\Models\Group;
 
 use DateTimeImmutable;
+use App\Exceptions\PersistenceException;
 use App\Exceptions\StateException;
 use PDO;
+use PDOException;
+use PDOStatement;
 use Throwable;
 
 final class GroupDAO
@@ -83,7 +86,7 @@ final class GroupDAO
             WHERE id = :id AND deleted_at IS NULL
         ");
 
-        $stmt->execute(['id' => $id]);
+        $this->execute($stmt, ['id' => $id]);
         $tuple = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($tuple === false) {
@@ -104,7 +107,7 @@ final class GroupDAO
             ORDER BY g.name
         ");
 
-        $stmt->execute([':user_id' => $userId]);
+        $this->execute($stmt, [':user_id' => $userId]);
 
         $groups = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $tuple) {
@@ -122,7 +125,7 @@ final class GroupDAO
             VALUES (:name, :created_at)
         ");
 
-        $stmt->execute([
+        $this->execute($stmt, [
             ':name' => $group->getName(),
             ':created_at' => $group->getCreatedAt()->format('Y-m-d H:i:s')
         ]);
@@ -138,7 +141,7 @@ final class GroupDAO
             WHERE id = :id AND deleted_at IS NULL
         ");
 
-        $stmt->execute([
+        $this->execute($stmt, [
             ':id' => $group->getId(),
             ':name' => $group->getName(),
             ':deleted_at' => $group->getDeletedAt()?->format('Y-m-d H:i:s')
@@ -153,7 +156,7 @@ final class GroupDAO
              VALUES (:group_id, :user_id, :role, :joined_at)"
         );
 
-        $stmt->execute([
+        $this->execute($stmt, [
             ':group_id' => $groupId,
             ':user_id' => $member->userId,
             ':role' => $member->role->value,
@@ -198,7 +201,7 @@ final class GroupDAO
             WHERE group_id = :group_id AND user_id = :user_id
         ");
 
-        $stmt->execute([
+        $this->execute($stmt, [
             ':group_id' => $groupId,
             ':user_id' => $userId
         ]);
@@ -212,7 +215,7 @@ final class GroupDAO
             WHERE group_id = :group_id AND user_id = :user_id
         ");
 
-        $stmt->execute([
+        $this->execute($stmt, [
             ':group_id' => $groupId,
             ':user_id' => $member->userId,
             ':role' => $member->role->value
@@ -227,7 +230,7 @@ final class GroupDAO
             WHERE group_id = :group_id
         ");
 
-        $stmt->execute([':group_id' => $groupId]);
+        $this->execute($stmt, [':group_id' => $groupId]);
 
         $members = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $tuple) {
@@ -256,5 +259,14 @@ final class GroupDAO
             GroupRole::from($tuple['role']),
             new DateTimeImmutable($tuple['joined_at'])
         );
+    }
+
+    private function execute(PDOStatement $statement, ?array $parameters = null): void
+    {
+        try {
+            $parameters === null ? $statement->execute() : $statement->execute($parameters);
+        } catch (PDOException $e) {
+            throw new PersistenceException('Erro de persistência no banco de dados.', 0, $e);
+        }
     }
 }
